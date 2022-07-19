@@ -18,6 +18,7 @@ dependencies:
   flutter_secure_storage: ^5.0.2
   blur_bottom_bar: ^1.0.3
   url_launcher: ^6.1.5
+  webview_flutter: ^3.0.4
 
 dev_dependencies:
   flutter_test:

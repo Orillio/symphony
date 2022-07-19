@@ -61,10 +61,13 @@ class _NavigationScaffold extends StatelessWidget {
             children: model.pages,
           ),
           BlurBottomView(
+            key: UniqueKey(),
+            filterX: 15,
+            filterY: 20,
             onIndexChange: (index) {
               model.controller.animateToPage(
                 index,
-                duration: const Duration(milliseconds: 300),
+                duration: const Duration(milliseconds: 500),
                 curve: Curves.easeInOut,
               );
               model.currentIndex = index;
