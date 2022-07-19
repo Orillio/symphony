@@ -8,19 +8,31 @@ import 'package:symphony/screens/info_screen.dart';
 import 'package:symphony/screens/media_screen.dart';
 import 'package:symphony/screens/search_screen.dart';
 
+
 class NavigationModel extends ChangeNotifier {
+
+  String _appBarTitle = "Медиатека";
   var _currentIndex = 0;
 
   PageController controller = PageController(
     initialPage: 0
   );
 
-  var pages = <Widget>[
+  var pages = <dynamic>[
     const MediaScreen(),
     const SearchScreen(),
     const DownloadsScreen(),
     const InfoScreen()
   ];
+
+  set appBarTitle(String value) {
+    _appBarTitle = value;
+    notifyListeners();
+  }
+
+  String get appBarTitle {
+    return _appBarTitle;
+  }
 
   set currentIndex(int value) {
     _currentIndex = value;
@@ -38,32 +50,36 @@ class NavigationScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
         create: (_) => NavigationModel(),
-        child: const _NavigationScaffold(),
+        child: _NavigationScaffold(),
       );
 }
 
 class _NavigationScaffold extends StatelessWidget {
-  const _NavigationScaffold({Key? key}) : super(key: key);
+  _NavigationScaffold({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var model = context.watch<NavigationModel>();
-
     return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          model.appBarTitle,
+        ),
+        centerTitle: false,
+      ),
       body: Stack(
         children: [
           PageView(
             onPageChanged: (index) {
               model.currentIndex = index;
+              model.appBarTitle = model.pages[index].title;
             },
             physics: const BouncingScrollPhysics(),
             controller: model.controller,
-            children: model.pages,
+            children: model.pages.map((e) => e as Widget).toList(),
           ),
           BlurBottomView(
-            key: UniqueKey(),
-            filterX: 15,
-            filterY: 20,
+            opacity: 0.98,
             onIndexChange: (index) {
               model.controller.animateToPage(
                 index,
