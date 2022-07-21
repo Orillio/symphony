@@ -66,7 +66,7 @@ class _NavigationScaffold extends StatelessWidget {
               children: model.pages.map((e) => e as Widget).toList(),
             ),
             BlurBottomView(
-              opacity: 0.98,
+              opacity: 0.80,
               onIndexChange: (index) {
                 model.controller.animateToPage(
                   index,

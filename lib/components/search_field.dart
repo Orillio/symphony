@@ -5,10 +5,12 @@ import 'package:get/get.dart';
 class SearchField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
+  final Function(String)? onSubmitted;
 
   const SearchField({
     required this.controller,
     required this.hintText,
+    this.onSubmitted,
     Key? key,
   }) : super(key: key);
 
@@ -40,6 +42,7 @@ class _SearchFieldState extends State<SearchField> {
           });
         }
       },
+      onSubmitted: widget.onSubmitted,
       style: TextStyle(color: Get.theme.primaryColorLight),
       decoration: InputDecoration(
 

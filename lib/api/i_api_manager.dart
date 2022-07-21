@@ -1,6 +1,6 @@
 import 'models/i_search_model.dart';
 
 abstract class IApiManager {
-  List<ISearchModel> getVideoList(String query, {dynamic options});
-  ISearchModel getConcreteVideo(String id, {dynamic options});
+  Future<List<ISearchModel>> getVideoList(String query, {Map<String, dynamic>? queryParameters});
+  Future<ISearchModel> getConcreteVideo(String id, {Map<String, dynamic>? queryParameters});
 }

@@ -4,13 +4,17 @@ class YtSearchModel implements ISearchModel {
   @override
   late String id;
   @override
-  late String url;
-  @override
   String? thumbnailUrl;
   @override
   late String title;
   @override
-  String? description;
-  @override
-  late String length;
+  late String author;
+
+  YtSearchModel.fromMap(Map<String, dynamic> map) {
+    id = map["videoId"];
+    thumbnailUrl = map["thumbnailUrl"];
+    title = map["title"];
+    author = map["author"];
+  }
+
 }

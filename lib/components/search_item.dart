@@ -1,11 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:symphony/api/models/i_search_model.dart';
 
 class SearchItem extends StatefulWidget {
   final bool hasDivider;
-
-  const SearchItem({required this.hasDivider, Key? key}) : super(key: key);
+  final ISearchModel model;
+  const SearchItem({
+    required this.hasDivider,
+    required this.model,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<SearchItem> createState() => _SearchItemState();
@@ -23,7 +28,7 @@ class _SearchItemState extends State<SearchItem> {
             child: Padding(
               padding: const EdgeInsets.all(2),
               child: Image.network(
-                "https://i.ytimg.com/vi/YPRaA6KhyXc/default.jpg",
+                widget.model.thumbnailUrl ?? "https://yt3.ggpht.com/a/AATXAJwBrMUDoeJSac80YsHJuQ73NZuHtBMeE_Mftln0=s900-c-k-c0xffffffff-no-rj-mo",
                 width: 60,
                 height: 50,
               ),
@@ -46,14 +51,14 @@ class _SearchItemState extends State<SearchItem> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: const [
+                          children: [
                             Text(
-                              "Flutter video about widgets and widgets and more",
+                              widget.model.title,
                               overflow: TextOverflow.ellipsis,
-                              style: TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.white),
                             ),
                             Text(
-                              "FlutterDevelopers | 21:06",
+                              widget.model.author,
                               maxLines: 1,
                               style: TextStyle(color: Colors.grey),
                             )
