@@ -13,7 +13,9 @@ class SymphonyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Symphony App',
+      themeMode: ThemeMode.dark,
       theme: AppThemes.darkTheme,
       home: const NavigationScaffold(),
     );

@@ -23,6 +23,9 @@ dependencies:
   audio_service: ^0.18.7
   just_audio: ^0.9.28
   custom_sliding_segmented_control: ^1.7.1
+  audio_session: ^0.1.10
+  dio: ^4.0.6
+  flutter_dotenv: ^5.0.2
 
 dev_dependencies:
   flutter_test:
