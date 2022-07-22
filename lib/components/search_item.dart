@@ -5,29 +5,45 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:symphony/api/api_youtube/yt_api_manager.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
-class SearchItem extends StatefulWidget {
+class SearchItem extends StatelessWidget {
   final bool hasDivider;
   final Video model;
 
-  const SearchItem({
+  const SearchItem({required this.hasDivider,
+    required this.model,Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return _SearchItem(
+      hasDivider: hasDivider,
+      model: model,
+    );
+  }
+}
+
+class _SearchItem extends StatefulWidget {
+  final bool hasDivider;
+  final Video model;
+
+  const _SearchItem({
     required this.hasDivider,
     required this.model,
     Key? key,
   }) : super(key: key);
 
   @override
-  State<SearchItem> createState() => _SearchItemState();
+  State<_SearchItem> createState() => __SearchItemState();
 }
 
-class _SearchItemState extends State<SearchItem> {
+class __SearchItemState extends State<_SearchItem> {
   late YtApiManager _ytApiManager;
-  int _videoState = 0;
+  late int _videoState;
 
   @override
   initState() {
     _ytApiManager = YtApiManager();
-    _ytApiManager.progressBroadcastStream.listen((event) {},
-    onDone: () {
+    _videoState = 0;
+    _ytApiManager.progressBroadcastStream.listen((event) {}, onDone: () {
       setState(() {
         _videoState = 1;
       });
@@ -135,30 +151,31 @@ class _SearchItemState extends State<SearchItem> {
                             ),
                           ),
                           StreamBuilder<double>(
-                              stream: _ytApiManager.progressBroadcastStream.asBroadcastStream(),
-                              builder: (context, snapshot) {
-                                if (!snapshot.hasData) {
-                                  return const SizedBox.shrink();
-                                }
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 5),
-                                  child: CircularPercentIndicator(
-                                    radius: 20,
-                                    center: Text(
-                                      "${(snapshot.data! * 100).toStringAsFixed(0)}%",
-                                      style: const TextStyle(
-                                        fontSize: 9,
-                                        color: Colors.white,
-                                      ),
+                            stream: _ytApiManager.progressBroadcastStream
+                                .asBroadcastStream(),
+                            builder: (context, snapshot) {
+                              if (!snapshot.hasData) {
+                                return const SizedBox.shrink();
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 5),
+                                child: CircularPercentIndicator(
+                                  radius: 20,
+                                  center: Text(
+                                    "${(snapshot.data! * 100).toStringAsFixed(0)}%",
+                                    style: const TextStyle(
+                                      fontSize: 9,
+                                      color: Colors.white,
                                     ),
-                                    lineWidth: 4,
-                                    progressColor: Get.theme.primaryColor,
-                                    backgroundColor: Get.theme.primaryColorDark,
-                                    percent: snapshot.data!,
                                   ),
-                                );
-                              },
-                            ),
+                                  lineWidth: 4,
+                                  progressColor: Get.theme.primaryColor,
+                                  backgroundColor: Get.theme.primaryColorDark,
+                                  percent: snapshot.data!,
+                                ),
+                              );
+                            },
+                          ),
                         ],
                       )
                     ],
