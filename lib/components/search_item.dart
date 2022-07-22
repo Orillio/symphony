@@ -1,11 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:symphony/api/models/i_search_model.dart';
+import 'package:symphony/api/api_youtube/yt_api_manager.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class SearchItem extends StatefulWidget {
   final bool hasDivider;
-  final ISearchModel model;
+  final Video model;
 
   const SearchItem({
     required this.hasDivider,
@@ -20,6 +21,7 @@ class SearchItem extends StatefulWidget {
 class _SearchItemState extends State<SearchItem> {
   @override
   Widget build(BuildContext context) {
+
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Row(
@@ -28,16 +30,11 @@ class _SearchItemState extends State<SearchItem> {
             flex: 1,
             child: Padding(
               padding: const EdgeInsets.all(2),
-              child: widget.model.thumbnailUrl != null
-                  ? Image.network(
-                      widget.model.thumbnailUrl!,
-                      width: 60,
-                      height: 50,
-                    )
-                  : const Icon(
-                      CupertinoIcons.double_music_note,
-                      size: 50,
-                    ),
+              child: Image.network(
+                widget.model.thumbnails.lowResUrl,
+                width: 60,
+                height: 50,
+              ),
             ),
           ),
           Flexible(
@@ -48,12 +45,12 @@ class _SearchItemState extends State<SearchItem> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.6,
-                        height: 45,
+                        height: 52,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -75,7 +72,9 @@ class _SearchItemState extends State<SearchItem> {
                         padding: const EdgeInsets.all(0),
                         icon: const Icon(CupertinoIcons.arrow_down_to_line),
                         color: Get.theme.primaryColor,
-                        onPressed: () {},
+                        onPressed: () {
+                          YtApiManager().downloadVideo(widget.model);
+                        },
                       ),
                     ],
                   ),

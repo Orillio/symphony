@@ -1,62 +1,20 @@
+import 'dart:async';
+import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:path_provider/path_provider.dart' as pp;
 import 'package:symphony/api/i_api_manager.dart';
 import 'package:symphony/api/models/i_search_model.dart';
-import 'package:symphony/screens/search_pages/yt_search_page.dart';
-
-import '../models/yt_search_model.dart';
+import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YtApiManager implements IApiManager {
 
-  final String _ytApiBaseUrl = "https://www.googleapis.com/youtube/v3";
   final _dio = Dio();
-  late final String _apiKey;
-
-  YtApiManager({String? apiKey}) {
-    if(apiKey == null){
-      _apiKey = dotenv.env["GOOGLE_API_KEY"]!;
-    }
-    else {
-      _apiKey = apiKey;
-    }
-  }
+  final yt = YoutubeExplode();
 
   @override
-  Future<List<ISearchModel>> getVideoList(String query, {Map<String, dynamic>? queryParameters}) async {
-    queryParameters ??= <String, dynamic> {
-      "part": "snippet",
-      "maxResults": 25,
-      "q": query,
-      "key": _apiKey,
-      "type": "video"
-    };
-    if(!queryParameters.containsKey("key")) {
-      queryParameters.addAll({
-        "key": _apiKey,
-      });
-    }
-    Response<dynamic> response;
-    try{
-      response = await _dio.get(
-        "$_ytApiBaseUrl/search",
-        queryParameters: queryParameters,
-      );
-
-    }
-    on DioError catch(e) {
-      print(e.message);
-      rethrow;
-    }
-    var items = response.data["items"] as List<dynamic>;
-    return items.map((e) {
-      return YtSearchModel.fromMap({
-        "videoId": e["id"]["videoId"],
-        "thumbnailUrl": e["snippet"]["thumbnails"]["default"]["url"],
-        "title": e["snippet"]["title"],
-        "author": e["snippet"]["channelTitle"],
-      });
-    }).toList();
+  Future<VideoSearchList> getVideoList(String query) async {
+    var response = await yt.search.search(query);
+    return response;
   }
 
   @override
@@ -65,4 +23,54 @@ class YtApiManager implements IApiManager {
     throw UnimplementedError();
   }
 
+  @override
+  Future downloadVideo(Video video) async {
+    var muxedVideo = (await yt.videos.streams.getManifest(video.id)).muxed.withHighestBitrate();
+    var stream = yt.videos.streams.get(muxedVideo);
+    var directory = await pp.getApplicationDocumentsDirectory();
+    var downloads = Directory("${directory.path}");
+    var videoTitle = video.title.replaceAll(r'\', '')
+      .replaceAll('/', '')
+      .replaceAll('*', '')
+      .replaceAll('?', '')
+      .replaceAll('"', '')
+      .replaceAll('<', '')
+      .replaceAll('>', '')
+      .replaceAll('|', '');
+    var newFile = File("${downloads.path}/$videoTitle.${muxedVideo.container.name}");
+
+    if (newFile.existsSync()) {
+      newFile.deleteSync();
+    }
+    var output = newFile.openWrite();
+    var len = muxedVideo.size.totalBytes;
+    var count = 0;
+    print(newFile);
+
+    // stream.listen((event) {
+    //   output.add(event);
+    //   count += event.length;
+    //   print(count / len);
+    // });
+    await stream.pipe(output);
+    output.flush();
+    output.close();
+  }
 }
+
+
+
+
+// var status = await Permission.storage.status;
+// if (status.isRestricted || status.isDenied || status.isLimited) {
+//   Map<Permission, PermissionStatus> statuses = await [
+//     Permission.storage,
+//   ].request();
+//   print(statuses[Permission.storage]); // this must show permission granted.
+// }
+// File file = File('/storage/emulated/0/folder_name/out.mp4');
+// final FlutterFFprobe _flutterFFprobe = new FlutterFFprobe();
+//
+// _flutterFFprobe
+//     .getMediaInformation(file.path)
+//     .then((info) => print(info));

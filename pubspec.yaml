@@ -18,14 +18,17 @@ dependencies:
   flutter_secure_storage: ^5.0.2
   blur_bottom_bar: ^1.0.3
   url_launcher: ^6.1.5
-  webview_flutter: ^3.0.4
   video_player: ^2.4.5
   audio_service: ^0.18.7
   just_audio: ^0.9.28
   custom_sliding_segmented_control: ^1.7.1
   audio_session: ^0.1.10
   dio: ^4.0.6
-  flutter_dotenv: ^5.0.2
+  youtube_explode_dart: ^1.12.0
+  permission_handler: ^10.0.0
+  path_provider: ^2.0.11
+  flutter_youtube_downloader: ^0.0.5
+  youtube_dl: ^0.0.1
 
 dev_dependencies:
   flutter_test:
