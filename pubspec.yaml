@@ -29,6 +29,7 @@ dependencies:
   path_provider: ^2.0.11
   flutter_youtube_downloader: ^0.0.5
   youtube_dl: ^0.0.1
+  percent_indicator: ^4.2.2
 
 dev_dependencies:
   flutter_test:

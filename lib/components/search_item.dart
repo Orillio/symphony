@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:symphony/api/api_youtube/yt_api_manager.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
@@ -19,9 +20,23 @@ class SearchItem extends StatefulWidget {
 }
 
 class _SearchItemState extends State<SearchItem> {
+  late YtApiManager _ytApiManager;
+  int _videoState = 0;
+
+  @override
+  initState() {
+    _ytApiManager = YtApiManager();
+    _ytApiManager.progressBroadcastStream.listen((event) {},
+    onDone: () {
+      setState(() {
+        _videoState = 1;
+      });
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-
     return Padding(
       padding: const EdgeInsets.all(0),
       child: Row(
@@ -45,7 +60,7 @@ class _SearchItemState extends State<SearchItem> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       SizedBox(
@@ -60,22 +75,92 @@ class _SearchItemState extends State<SearchItem> {
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(color: Colors.white),
                             ),
-                            Text(
-                              widget.model.author,
-                              maxLines: 1,
-                              style: TextStyle(color: Colors.grey),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.4,
+                                  child: Text(
+                                    widget.model.author,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                ),
+                                Text(
+                                  "${(widget.model.duration!.inSeconds / 60).round()}:"
+                                  "${widget.model.duration!.inSeconds % 60}",
+                                  maxLines: 1,
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                              ],
                             )
                           ],
                         ),
                       ),
-                      IconButton(
-                        padding: const EdgeInsets.all(0),
-                        icon: const Icon(CupertinoIcons.arrow_down_to_line),
-                        color: Get.theme.primaryColor,
-                        onPressed: () {
-                          YtApiManager().downloadVideo(widget.model);
-                        },
-                      ),
+                      IndexedStack(
+                        index: _videoState,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              setState(() {
+                                _videoState = 2;
+                              });
+                              _ytApiManager.downloadVideo(widget.model);
+                            },
+                            customBorder: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Center(
+                                child: Icon(
+                                  CupertinoIcons.arrow_down_to_line,
+                                  color: Get.theme.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Center(
+                              child: Icon(
+                                CupertinoIcons.checkmark_alt,
+                                color: Get.theme.primaryColor,
+                              ),
+                            ),
+                          ),
+                          StreamBuilder<double>(
+                              stream: _ytApiManager.progressBroadcastStream.asBroadcastStream(),
+                              builder: (context, snapshot) {
+                                if (!snapshot.hasData) {
+                                  return const SizedBox.shrink();
+                                }
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 5),
+                                  child: CircularPercentIndicator(
+                                    radius: 20,
+                                    center: Text(
+                                      "${(snapshot.data! * 100).toStringAsFixed(0)}%",
+                                      style: const TextStyle(
+                                        fontSize: 9,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    lineWidth: 4,
+                                    progressColor: Get.theme.primaryColor,
+                                    backgroundColor: Get.theme.primaryColorDark,
+                                    percent: snapshot.data!,
+                                  ),
+                                );
+                              },
+                            ),
+                        ],
+                      )
                     ],
                   ),
                   if (widget.hasDivider)

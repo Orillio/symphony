@@ -8,8 +8,20 @@ import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YtApiManager implements IApiManager {
 
+
   final _dio = Dio();
   final yt = YoutubeExplode();
+
+  final StreamController<double> _progressBroadcastStream = StreamController.broadcast();
+  Stream<List<int>>? _downloadBroadcastStream;
+
+  Stream<List<int>>? get downloadBroadcastStream {
+    return _downloadBroadcastStream;
+  }
+  Stream<double> get progressBroadcastStream {
+    return _progressBroadcastStream.stream;
+  }
+
 
   @override
   Future<VideoSearchList> getVideoList(String query) async {
@@ -22,13 +34,14 @@ class YtApiManager implements IApiManager {
     // TODO: implement getConcreteVideo
     throw UnimplementedError();
   }
-
   @override
   Future downloadVideo(Video video) async {
     var muxedVideo = (await yt.videos.streams.getManifest(video.id)).muxed.withHighestBitrate();
-    var stream = yt.videos.streams.get(muxedVideo);
+    _downloadBroadcastStream = yt.videos.streams.get(muxedVideo).asBroadcastStream();
+    if(_downloadBroadcastStream == null) return;
+
     var directory = await pp.getApplicationDocumentsDirectory();
-    var downloads = Directory("${directory.path}");
+    var downloads = Directory(directory.path);
     var videoTitle = video.title.replaceAll(r'\', '')
       .replaceAll('/', '')
       .replaceAll('*', '')
@@ -46,13 +59,13 @@ class YtApiManager implements IApiManager {
     var len = muxedVideo.size.totalBytes;
     var count = 0;
     print(newFile);
-
-    // stream.listen((event) {
-    //   output.add(event);
-    //   count += event.length;
-    //   print(count / len);
-    // });
-    await stream.pipe(output);
+    _downloadBroadcastStream!.listen((event) {
+      count += event.length;
+      _progressBroadcastStream.add(count / len);
+      print("${count / len} ${muxedVideo.size.totalMegaBytes} MB");
+    });
+    await _downloadBroadcastStream!.pipe(output);
+    _progressBroadcastStream.close();
     output.flush();
     output.close();
   }
