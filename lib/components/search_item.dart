@@ -6,6 +6,7 @@ import 'package:symphony/api/models/i_search_model.dart';
 class SearchItem extends StatefulWidget {
   final bool hasDivider;
   final ISearchModel model;
+
   const SearchItem({
     required this.hasDivider,
     required this.model,
@@ -27,15 +28,20 @@ class _SearchItemState extends State<SearchItem> {
             flex: 1,
             child: Padding(
               padding: const EdgeInsets.all(2),
-              child: Image.network(
-                widget.model.thumbnailUrl ?? "https://yt3.ggpht.com/a/AATXAJwBrMUDoeJSac80YsHJuQ73NZuHtBMeE_Mftln0=s900-c-k-c0xffffffff-no-rj-mo",
-                width: 60,
-                height: 50,
-              ),
+              child: widget.model.thumbnailUrl != null
+                  ? Image.network(
+                      widget.model.thumbnailUrl!,
+                      width: 60,
+                      height: 50,
+                    )
+                  : const Icon(
+                      CupertinoIcons.double_music_note,
+                      size: 50,
+                    ),
             ),
           ),
           Flexible(
-            flex: 4,
+            flex: 5,
             child: Padding(
               padding: const EdgeInsets.only(left: 5),
               child: Column(
