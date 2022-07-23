@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logger/logger.dart';
-import 'package:symphony/components/search_field.dart';
+import 'package:symphony/components/shared/search_field.dart';
 import 'package:symphony/main.dart';
 import 'package:symphony/screens/navigation_pages/search_screen.dart';
 

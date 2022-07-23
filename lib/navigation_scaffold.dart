@@ -8,6 +8,7 @@ import 'package:symphony/screens/navigation_pages/info_screen.dart';
 import 'package:symphony/screens/navigation_pages/media_screen.dart';
 import 'package:symphony/screens/navigation_pages/search_screen.dart';
 
+
 class NavigationModel extends ChangeNotifier {
 
   var _currentIndex = 0;
@@ -65,6 +66,7 @@ class _NavigationScaffold extends StatelessWidget {
               controller: model.controller,
               children: model.pages.map((e) => e as Widget).toList(),
             ),
+
             BlurBottomView(
               opacity: 0.80,
               onIndexChange: (index) {
