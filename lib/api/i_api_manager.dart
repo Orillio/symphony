@@ -4,6 +4,6 @@ import 'models/i_search_model.dart';
 
 abstract class IApiManager {
   Future<VideoSearchList> getVideoList(String query);
-  Future<ISearchModel> getConcreteVideo(String id);
+  Future<Video> getConcreteVideo(String id);
   Future downloadVideo(Video video);
 }

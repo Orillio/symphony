@@ -30,7 +30,7 @@ class _SearchFieldState extends State<SearchField> {
     FocusScope.of(context).unfocus();
     setState(() {
       widget.controller.text = "";
-      _hasText = false;
+      _hasText = widget.controller.text.isNotEmpty;
     });
   }
 
@@ -99,10 +99,11 @@ class _SearchFieldState extends State<SearchField> {
                 CupertinoIcons.search,
                 color: Get.theme.iconTheme.color,
               ),
-              suffixIcon: _hasText
+              suffixIcon: widget.controller.text.isNotEmpty
                   ? GestureDetector(
                       onTap: _onClear,
                       child: Icon(
+                        key: Key("clear_button"),
                         CupertinoIcons.clear_circled_solid,
                         color: Get.theme.iconTheme.color,
                       ),
@@ -129,6 +130,7 @@ class _SearchFieldState extends State<SearchField> {
               FocusScope.of(context).unfocus();
             },
             child: Container(
+              key: const Key("cancel-button"),
               child: Center(
                 child: AnimatedDefaultTextStyle(
                   maxLines: 1,

@@ -4,11 +4,19 @@ import 'package:symphony/api/api_youtube/yt_api_manager.dart';
 
 import 'package:symphony/main.dart';
 
+
 void main() {
-  group("YT search api test", () {
-    // var ytManager = YtApiManager(apiKey: "AIzaSyDpZw_j8c7ynk8kaj9nVscH80dX_rtbIKI");
-    // test("test getVideoList method", () async {
-    //   var data = ytManager.getVideoList("flutter");
-    // });
+
+  late YtApiManager sut;
+
+  setUp(() {
+    sut = YtApiManager(hasLogger: false);
+  });
+
+  group("YT api works fine", () {
+    test("getting video info works fine", () async {
+      var video = await sut.getConcreteVideo("dQw4w9WgXcQ");
+      expect(video.title, "Rick Astley - Never Gonna Give You Up (Official Music Video)");
+    });
   });
 }
