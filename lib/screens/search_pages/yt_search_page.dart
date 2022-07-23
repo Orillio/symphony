@@ -72,6 +72,7 @@ class _YtSearchPage extends StatelessWidget {
                         return Column(
                           children: [
                             SearchItem(
+                              key: UniqueKey(),
                               model: snapshot.data![index],
                               hasDivider: false,
                             ),
@@ -82,6 +83,7 @@ class _YtSearchPage extends StatelessWidget {
                         );
                       }
                       return SearchItem(
+                        key: UniqueKey(),
                         model: snapshot.data![index],
                         hasDivider: true,
                       );
