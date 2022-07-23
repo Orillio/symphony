@@ -3,4 +3,5 @@ abstract class ISearchModel {
   String? thumbnailUrl;
   late String title;
   late String author;
+  Duration? duration;
 }
