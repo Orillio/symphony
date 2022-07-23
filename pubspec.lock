@@ -200,18 +200,18 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_video_info:
+    dependency: "direct main"
+    description:
+      name: flutter_video_info
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.0"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_youtube_downloader:
-    dependency: "direct main"
-    description:
-      name: flutter_youtube_downloader
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.5"
   freezed_annotation:
     dependency: transitive
     description:
@@ -289,6 +289,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  logger:
+    dependency: "direct main"
+    description:
+      name: logger
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   matcher:
     dependency: transitive
     description:
@@ -644,6 +651,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.10"
+  video_thumbnail:
+    dependency: "direct main"
+    description:
+      name: video_thumbnail
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.2"
   win32:
     dependency: transitive
     description:
@@ -665,13 +679,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.0"
-  youtube_dl:
-    dependency: "direct main"
-    description:
-      name: youtube_dl
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.0.1"
   youtube_explode_dart:
     dependency: "direct main"
     description:

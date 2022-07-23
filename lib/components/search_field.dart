@@ -6,11 +6,13 @@ class SearchField extends StatefulWidget {
   final TextEditingController controller;
   final String hintText;
   final Function(String)? onSubmitted;
+  final Function(String)? onChanged;
 
   const SearchField({
     required this.controller,
     required this.hintText,
     this.onSubmitted,
+    this.onChanged,
     Key? key,
   }) : super(key: key);
 
@@ -64,6 +66,10 @@ class _SearchFieldState extends State<SearchField> {
           child: TextField(
             focusNode: _focusNode,
             onChanged: (newStr) {
+              widget.onChanged != null
+                  ? widget.onChanged!(newStr)
+                  : null;
+
               var temp = newStr.isNotEmpty;
               if (_hasText != temp) {
                 setState(() {

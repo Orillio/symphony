@@ -27,9 +27,10 @@ dependencies:
   youtube_explode_dart: ^1.12.0
   permission_handler: ^10.0.0
   path_provider: ^2.0.11
-  flutter_youtube_downloader: ^0.0.5
-  youtube_dl: ^0.0.1
   percent_indicator: ^4.2.2
+  logger: ^1.1.0
+  video_thumbnail: ^0.5.2
+  flutter_video_info: ^1.2.0
 
 dev_dependencies:
   flutter_test:

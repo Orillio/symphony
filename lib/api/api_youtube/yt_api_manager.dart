@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart' as pp;
 import 'package:symphony/api/i_api_manager.dart';
 import 'package:symphony/api/models/i_search_model.dart';
@@ -11,6 +12,7 @@ class YtApiManager implements IApiManager {
 
   final _dio = Dio();
   final yt = YoutubeExplode();
+  final _logger = Logger();
 
   final StreamController<double> _progressBroadcastStream = StreamController.broadcast();
   Stream<List<int>>? _downloadBroadcastStream;
@@ -53,21 +55,34 @@ class YtApiManager implements IApiManager {
     var newFile = File("${downloads.path}/$videoTitle.${muxedVideo.container.name}");
 
     if (newFile.existsSync()) {
+      _logger.i("The file with this name already exists. Rewriting it...");
       newFile.deleteSync();
     }
     var output = newFile.openWrite();
     var len = muxedVideo.size.totalBytes;
     var count = 0;
-    print(newFile);
+
     _downloadBroadcastStream!.listen((event) {
       count += event.length;
       _progressBroadcastStream.add(count / len);
-      print("${count / len} ${muxedVideo.size.totalMegaBytes} MB");
     });
-    await _downloadBroadcastStream!.pipe(output);
+
+    _logger.i("Downloading started...");
+    try{
+      await _downloadBroadcastStream!.pipe(output);
+    }
+    catch(e) {
+      _logger.e("Error happened!\n$e");
+    }
     _progressBroadcastStream.close();
     output.flush();
     output.close();
+
+    _logger.i(
+      "Successfully downloaded file with size:"
+      " ${muxedVideo.size.totalMegaBytes.toStringAsFixed(2)} MB!"
+      " The new file name is ${newFile.path}"
+    );
   }
 }
 

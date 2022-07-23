@@ -46,21 +46,21 @@ class __SearchScreenState extends StatelessWidget {
 
   Map<int, Widget> tabNames = {
     0: const Text(
-      "ВКонтакте",
+      "Youtube",
       style: TextStyle(
         color: Colors.white,
       ),
     ),
     1: const Text(
-      "Youtube",
+      "ВКонтакте",
       style: TextStyle(
         color: Colors.white,
       ),
     ),
   };
   List<Widget> tabs = [
-    VkSearchPage(),
     YtSearchPage(),
+    VkSearchPage(),
   ];
   @override
   Widget build(BuildContext context) {

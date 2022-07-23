@@ -12,12 +12,10 @@ class MediaScreen extends StatefulWidget {
 class _MediaScreenState extends State<MediaScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        "1 Page",
-        style: TextStyle(
-          color: Colors.white,
-        ),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: false,
+        title: Text("Медиатека"),
       ),
     );
   }
