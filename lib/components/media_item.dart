@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:symphony/screens/player_screen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 class MediaItem extends StatefulWidget {
@@ -47,6 +48,23 @@ class _MediaItemState extends State<MediaItem> {
   Widget build(BuildContext context) {
 
     return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+          backgroundColor: Get.theme.appBarTheme.backgroundColor,
+          isScrollControlled: true,
+          context: context,
+          builder: (context) {
+            return DraggableScrollableSheet(
+              initialChildSize: 0.95,
+              maxChildSize: 0.95,
+              minChildSize: 0.95,
+              builder: (BuildContext context, ScrollController scrollController) {
+                return const PlayerScreen();
+              },
+            );
+          }
+        );
+      },
       onTapUp: (_) async {
         await Future.delayed(const Duration(milliseconds: 260));
         setState(() {
