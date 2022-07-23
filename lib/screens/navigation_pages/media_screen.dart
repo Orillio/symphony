@@ -1,37 +1,55 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:provider/provider.dart';
-import 'package:symphony/components/search_field.dart';
+import 'package:symphony/api/api_downloads/downloads_api.dart';
+import 'package:symphony/components/media_item.dart';
+import 'package:symphony/components/shared/search_field.dart';
 
-import '../../components/action_button.dart';
+import '../../components/shared/action_button.dart';
+
+GlobalKey mediaScreenKey = GlobalKey();
 
 class MediaScreenChangeNotifier extends ChangeNotifier {
-   var searchFieldController = TextEditingController();
+  var searchFieldController = TextEditingController();
+  Future<List<VideoData>>? mediaFuture;
 }
 
 class MediaScreen extends StatelessWidget {
   const MediaScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => ChangeNotifierProvider(
-    create: (_) => MediaScreenChangeNotifier(),
-    child: const _MediaScreen(),
-  );
+  Widget build(BuildContext context) =>
+      ChangeNotifierProvider(
+        create: (_) => MediaScreenChangeNotifier(),
+        child: _MediaScreen(key: mediaScreenKey),
+      );
 }
 
 
-class _MediaScreen extends StatelessWidget {
+class _MediaScreen extends StatefulWidget {
 
-  final String title = "Медиатека";
   const _MediaScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    var model = context.watch<MediaScreenChangeNotifier>();
+  State<_MediaScreen> createState() => __MediaScreenState();
+}
 
+class __MediaScreenState extends State<_MediaScreen>
+  with AutomaticKeepAliveClientMixin<_MediaScreen>{
+  final String title = "Медиатека";
+
+  final downloads = DownloadsApi();
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    var model = context.watch<MediaScreenChangeNotifier>();
+    model.mediaFuture = downloads.getVideosInDocumentsFolder();
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
-        title: Text("Медиатека"),
+        title: const Text("Медиатека"),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 15),
@@ -54,9 +72,43 @@ class _MediaScreen extends StatelessWidget {
                 hintText: "Искать в медиатеке",
               ),
             ),
+            FutureBuilder<List<VideoData>>(
+              future: model.mediaFuture,
+              builder: (context, snapshot) {
+                if(snapshot.hasData) {
+                  return Expanded(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        return MediaItem(
+                          model: snapshot.data![index],
+                          hasDivider: index != snapshot.data!.length - 1,
+                        );
+                      },
+                    ),
+                  );
+                }
+                else {
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height * 0.3,
+                    ),
+                    child: Center(
+                      child: CupertinoActivityIndicator(
+                        color: Colors.grey[100],
+                      ),
+                    ),
+                  );
+                }
+              },
+            )
           ],
         ),
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

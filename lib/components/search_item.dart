@@ -5,6 +5,8 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:symphony/api/api_youtube/yt_api_manager.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
+import '../screens/navigation_pages/media_screen.dart';
+
 class SearchItem extends StatelessWidget {
   final bool hasDivider;
   final Video model;
@@ -47,6 +49,7 @@ class __SearchItemState extends State<_SearchItem> {
       setState(() {
         _videoState = 1;
       });
+      mediaScreenKey.currentState!.setState(() {});
     });
     super.initState();
   }

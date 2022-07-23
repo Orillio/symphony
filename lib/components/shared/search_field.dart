@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:symphony/components/action_button.dart';
+import 'package:symphony/components/shared/action_button.dart';
 
 class SearchField extends StatefulWidget {
   final TextEditingController controller;
