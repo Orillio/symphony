@@ -19,7 +19,7 @@ class YtSearchPageModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<VideoSearchList>? modelFuture;
+  Future<List<Video>>? modelFuture;
   var textSearchController = TextEditingController();
 
 }
@@ -58,7 +58,7 @@ class _YtSearchPage extends StatelessWidget {
           height: 10,
         ),
         if (model.searchedBefore && model.modelFuture != null)
-          FutureBuilder<VideoSearchList>(
+          FutureBuilder<List<Video>>(
             future: model.modelFuture,
             builder: (context, snapshot) {
               if (snapshot.hasData) {

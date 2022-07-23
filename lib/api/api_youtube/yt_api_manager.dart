@@ -27,9 +27,12 @@ class YtApiManager implements IApiManager {
 
 
   @override
-  Future<VideoSearchList> getVideoList(String query) async {
+  Future<List<Video>> getVideoList(String query) async {
     var response = await _yt.search.search(query);
-    return response;
+    var newResponse = response.where((e) {
+      return e.duration != null;
+    }).toList();
+    return newResponse;
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:symphony/components/action_button.dart';
 
 class SearchField extends StatefulWidget {
   final TextEditingController controller;
@@ -113,38 +114,13 @@ class _SearchFieldState extends State<SearchField> {
             controller: widget.controller,
           ),
         ),
-        AnimatedContainer(
+        ActionButton(
+          color: _color,
           width: _width,
-          height: 45,
-          duration: const Duration(milliseconds: 250),
-          child: GestureDetector(
-            onTapDown: (details) {
-              setState(() {
-                _color = Color(0xFF0550A1);
-              });
-            },
-            onTapUp: (details) {
-              setState(() {
-                _color = Get.theme.primaryColor;
-              });
-              FocusScope.of(context).unfocus();
-            },
-            child: Container(
-              key: const Key("cancel-button"),
-              child: Center(
-                child: AnimatedDefaultTextStyle(
-                  maxLines: 1,
-                  style: TextStyle(
-                    color: _color,
-                    fontSize: 16
-                  ),
-                  duration: const Duration(milliseconds: 150),
-                  child: const Text("Отменить"),
-                ),
-              ),
-            ),
+          text: Text(
+            "Отменить"
           ),
-        ),
+        )
       ],
     );
   }
