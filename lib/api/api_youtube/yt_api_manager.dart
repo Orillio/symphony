@@ -50,14 +50,9 @@ class YtApiManager implements IApiManager {
     if(!await appDir.exists()) {
       await appDir.create();
     }
-    var videoTitle = video.title.replaceAll(r'\', '')
-      .replaceAll('/', '')
-      .replaceAll('*', '')
-      .replaceAll('?', '')
-      .replaceAll('"', '')
-      .replaceAll('<', '')
-      .replaceAll('>', '')
-      .replaceAll('|', '');
+    var videoTitle = video.title.replaceAll(RegExp('[^a-zA-Z-()& _.0-9]'), '')
+                                .replaceAll(' ', '_');
+
 
     var newFile = File("${appDir.path}/${fileName ?? videoTitle}.${muxedVideo.container.name}");
 

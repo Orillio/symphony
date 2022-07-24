@@ -7,15 +7,14 @@ import 'package:symphony/screens/navigation_pages/downloads_screen.dart';
 import 'package:symphony/screens/navigation_pages/info_screen.dart';
 import 'package:symphony/screens/navigation_pages/media_screen.dart';
 import 'package:symphony/screens/navigation_pages/search_screen.dart';
+import 'package:symphony/screens/player_screen.dart';
 
+import 'components/shared/custom_bottom_sheet.dart';
 
 class NavigationModel extends ChangeNotifier {
-
   var _currentIndex = 0;
 
-  PageController controller = PageController(
-    initialPage: 0
-  );
+  PageController controller = PageController(initialPage: 0);
 
   var pages = <dynamic>[
     const MediaScreen(),
@@ -23,7 +22,6 @@ class NavigationModel extends ChangeNotifier {
     const DownloadsScreen(),
     const InfoScreen()
   ];
-
 
   set currentIndex(int value) {
     _currentIndex = value;
@@ -46,7 +44,7 @@ class NavigationScaffold extends StatelessWidget {
 }
 
 class _NavigationScaffold extends StatelessWidget {
-  const _NavigationScaffold({Key? key}) : super(key: key);
+  _NavigationScaffold({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -66,7 +64,6 @@ class _NavigationScaffold extends StatelessWidget {
               controller: model.controller,
               children: model.pages.map((e) => e as Widget).toList(),
             ),
-
             BlurBottomView(
               opacity: 0.80,
               onIndexChange: (index) {
@@ -78,9 +75,10 @@ class _NavigationScaffold extends StatelessWidget {
                 model.currentIndex = index;
               },
               currentIndex: model.currentIndex,
-              backgroundColor: Get.theme.bottomNavigationBarTheme.backgroundColor!,
+              backgroundColor:
+                  Get.theme.bottomNavigationBarTheme.backgroundColor!,
               selectedItemColor:
-              Get.theme.bottomNavigationBarTheme.selectedItemColor!,
+                  Get.theme.bottomNavigationBarTheme.selectedItemColor!,
               showSelectedLabels: false,
               showUnselectedLabels: false,
               bottomNavigationBarItems: const [
@@ -101,6 +99,9 @@ class _NavigationScaffold extends StatelessWidget {
                   label: "",
                 ),
               ],
+            ),
+            CustomBottomSheet(
+              key: bottomSheetKey,
             ),
           ],
         ),

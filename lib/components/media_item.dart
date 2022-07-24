@@ -1,13 +1,15 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:symphony/components/shared/custom_bottom_sheet.dart';
 import 'package:symphony/screens/player_screen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
+
+
 
 class MediaItem extends StatefulWidget {
   final VideoData model;
@@ -48,27 +50,12 @@ class _MediaItemState extends State<MediaItem> {
   Widget build(BuildContext context) {
 
     return GestureDetector(
-      onTap: () {
-        showModalBottomSheet(
-          backgroundColor: Get.theme.appBarTheme.backgroundColor,
-          isScrollControlled: true,
-          context: context,
-          builder: (context) {
-            return DraggableScrollableSheet(
-              initialChildSize: 0.95,
-              maxChildSize: 0.95,
-              minChildSize: 0.95,
-              builder: (BuildContext context, ScrollController scrollController) {
-                return PlayerScreen(
-                  model: widget.model,
-                );
-              },
-            );
-          }
-        );
+      onTap: () async {
+        await Future.delayed(const Duration(milliseconds: 300));
+        bottomSheetKey.currentState?.open();
       },
       onTapUp: (_) async {
-        await Future.delayed(const Duration(milliseconds: 260));
+        await Future.delayed(const Duration(milliseconds: 300));
         setState(() {
           _containerColor = Colors.transparent;
         });

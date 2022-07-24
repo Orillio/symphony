@@ -16,6 +16,7 @@ class DownloadsApi {
       var video = await _videoInfo.getVideoInfo(entity.path);
       // todo: make check for mp3
       if(video == null || video.mimetype == null || !video.mimetype!.contains("video/")) continue;
+      video.title = video.title!.replaceAll("_", " ");
       result.add(video);
     }
     return result;
