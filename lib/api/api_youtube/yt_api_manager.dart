@@ -45,8 +45,11 @@ class YtApiManager implements IApiManager {
     _downloadBroadcastStream = _yt.videos.streams.get(muxedVideo).asBroadcastStream();
     if(_downloadBroadcastStream == null) return;
 
-    var directory = await pp.getApplicationDocumentsDirectory();
-    var downloads = Directory(directory.path);
+    var documentsDir = await pp.getApplicationDocumentsDirectory();
+    var appDir = Directory('${documentsDir.path}/Symphony');
+    if(!await appDir.exists()) {
+      await appDir.create();
+    }
     var videoTitle = video.title.replaceAll(r'\', '')
       .replaceAll('/', '')
       .replaceAll('*', '')
@@ -56,7 +59,7 @@ class YtApiManager implements IApiManager {
       .replaceAll('>', '')
       .replaceAll('|', '');
 
-    var newFile = File("${downloads.path}/${fileName ?? videoTitle}.${muxedVideo.container.name}");
+    var newFile = File("${appDir.path}/${fileName ?? videoTitle}.${muxedVideo.container.name}");
 
     if (newFile.existsSync()) {
       if(hasLogger) _logger.i("The file with this name already exists. Rewriting it...");

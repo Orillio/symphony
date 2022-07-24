@@ -59,7 +59,9 @@ class _MediaItemState extends State<MediaItem> {
               maxChildSize: 0.95,
               minChildSize: 0.95,
               builder: (BuildContext context, ScrollController scrollController) {
-                return const PlayerScreen();
+                return PlayerScreen(
+                  model: widget.model,
+                );
               },
             );
           }
