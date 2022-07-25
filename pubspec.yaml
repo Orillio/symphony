@@ -31,6 +31,7 @@ dependencies:
   logger: ^1.1.0
   video_thumbnail: ^0.5.2
   flutter_video_info: ^1.2.0
+  audio_video_progress_bar: ^0.10.0
 
 dev_dependencies:
   flutter_test:

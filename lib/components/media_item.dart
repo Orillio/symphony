@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
-import 'package:symphony/components/shared/custom_bottom_sheet.dart';
-import 'package:symphony/screens/player_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:symphony/screens/player/player_screen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-
+import '../navigation_scaffold.dart';
 
 class MediaItem extends StatefulWidget {
   final VideoData model;
@@ -31,28 +31,32 @@ class _MediaItemState extends State<MediaItem> {
   void initState() {
     super.initState();
     changedDate = FileStat.statSync(widget.model.path!).changed;
-    thumbnailData = VideoThumbnail.thumbnailData(video: widget.model.path!);
+    thumbnailData =
+        VideoThumbnail.thumbnailData(video: widget.model.path!, timeMs: 20000);
   }
 
   String durationToMinutes(double duration) {
     int result = (duration / (1000 * 60)).floor();
     return result < 10 ? "0$result" : "$result";
   }
+
   String durationToRemainderSeconds(double duration) {
     int result = ((duration / 1000) % 60).round();
     return result < 10 ? "0$result" : "$result";
   }
-  String appendZero(int item){
+
+  String appendZero(int item) {
     return item < 10 ? "0$item" : "$item";
   }
 
   @override
   Widget build(BuildContext context) {
-
+    var model = context.read<VideoPlayerChangeNotifier>();
     return GestureDetector(
       onTap: () async {
         await Future.delayed(const Duration(milliseconds: 300));
-        bottomSheetKey.currentState?.open();
+        playerKey.currentState?.model = widget.model;
+        model.openBottomSheet();
       },
       onTapUp: (_) async {
         await Future.delayed(const Duration(milliseconds: 300));
@@ -86,7 +90,10 @@ class _MediaItemState extends State<MediaItem> {
                             height: 50,
                           );
                         } else {
-                          return const SizedBox.shrink();
+                          return const SizedBox(
+                            width: 60,
+                            height: 50,
+                          );
                         }
                       },
                     )),
@@ -127,12 +134,14 @@ class _MediaItemState extends State<MediaItem> {
                                         "${durationToRemainderSeconds(widget.model.duration!)} | "
                                         "${(widget.model.filesize! / (1024 * 1024)).toStringAsFixed(1)} MB",
                                         maxLines: 1,
-                                        style: const TextStyle(color: Colors.grey),
+                                        style:
+                                            const TextStyle(color: Colors.grey),
                                       ),
                                       Text(
                                         "${appendZero(changedDate.day)}.${appendZero(changedDate.month)}.${changedDate.year}",
                                         maxLines: 1,
-                                        style: const TextStyle(color: Colors.grey),
+                                        style:
+                                            const TextStyle(color: Colors.grey),
                                       ),
                                     ],
                                   )
@@ -159,7 +168,9 @@ class _MediaItemState extends State<MediaItem> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10,),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       if (widget.hasDivider)
                         const Divider(
                           height: 0,

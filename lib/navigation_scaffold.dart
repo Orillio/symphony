@@ -1,15 +1,29 @@
 import 'package:blur_bottom_bar/blur_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:symphony/screens/navigation_pages/downloads_screen.dart';
 import 'package:symphony/screens/navigation_pages/info_screen.dart';
 import 'package:symphony/screens/navigation_pages/media_screen.dart';
 import 'package:symphony/screens/navigation_pages/search_screen.dart';
-import 'package:symphony/screens/player_screen.dart';
+import 'package:video_player/video_player.dart';
+import 'dart:io';
+import 'screens/player/video_player_sheet.dart';
 
-import 'components/shared/custom_bottom_sheet.dart';
+class VideoPlayerChangeNotifier extends ChangeNotifier {
+  late final AnimationController bottomSheetAnimationController;
+  final Duration defaultDuration = const Duration(milliseconds: 300);
+
+  openBottomSheet() {
+    bottomSheetAnimationController.duration = defaultDuration;
+    bottomSheetAnimationController.reverse();
+  }
+  closeBottomSheet() {
+    bottomSheetAnimationController.forward();
+  }
+}
 
 class NavigationModel extends ChangeNotifier {
   var _currentIndex = 0;
@@ -54,56 +68,62 @@ class _NavigationScaffold extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        body: Stack(
-          children: [
-            PageView(
-              onPageChanged: (index) {
-                model.currentIndex = index;
-              },
-              physics: const BouncingScrollPhysics(),
-              controller: model.controller,
-              children: model.pages.map((e) => e as Widget).toList(),
-            ),
-            BlurBottomView(
-              opacity: 0.80,
-              onIndexChange: (index) {
-                model.controller.animateToPage(
-                  index,
-                  duration: const Duration(milliseconds: 500),
-                  curve: Curves.easeInOut,
-                );
-                model.currentIndex = index;
-              },
-              currentIndex: model.currentIndex,
-              backgroundColor:
-                  Get.theme.bottomNavigationBarTheme.backgroundColor!,
-              selectedItemColor:
-                  Get.theme.bottomNavigationBarTheme.selectedItemColor!,
-              showSelectedLabels: false,
-              showUnselectedLabels: false,
-              bottomNavigationBarItems: const [
-                BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.double_music_note),
-                  label: "",
+        body: ChangeNotifierProvider(
+          create: (_) => VideoPlayerChangeNotifier(),
+          child: Stack(
+            children: [
+              Consumer<VideoPlayerChangeNotifier>(
+                child: PageView(
+                  onPageChanged: (index) {
+                    model.currentIndex = index;
+                  },
+                  physics: const BouncingScrollPhysics(),
+                  controller: model.controller,
+                  children: model.pages.map((e) => e as Widget).toList(),
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.search),
-                  label: "",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.arrow_down_to_line_alt),
-                  label: "",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(CupertinoIcons.info),
-                  label: "",
-                ),
-              ],
-            ),
-            CustomBottomSheet(
-              key: bottomSheetKey,
-            ),
-          ],
+                builder: (context, vp, child) {
+                  return child!;
+                },
+              ),
+              BlurBottomView(
+                opacity: 0.80,
+                onIndexChange: (index) {
+                  model.controller.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 500),
+                    curve: Curves.easeInOut,
+                  );
+                  model.currentIndex = index;
+                },
+                currentIndex: model.currentIndex,
+                backgroundColor:
+                    Get.theme.bottomNavigationBarTheme.backgroundColor!,
+                selectedItemColor:
+                    Get.theme.bottomNavigationBarTheme.selectedItemColor!,
+                showSelectedLabels: false,
+                showUnselectedLabels: false,
+                bottomNavigationBarItems: const [
+                  BottomNavigationBarItem(
+                    icon: Icon(CupertinoIcons.double_music_note),
+                    label: "",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(CupertinoIcons.search),
+                    label: "",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(CupertinoIcons.arrow_down_to_line_alt),
+                    label: "",
+                  ),
+                  BottomNavigationBarItem(
+                    icon: Icon(CupertinoIcons.info),
+                    label: "",
+                  ),
+                ],
+              ),
+              VideoPlayerSheet(),
+            ],
+          ),
         ),
       ),
     );
