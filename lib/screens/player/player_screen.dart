@@ -30,7 +30,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
     if (file.existsSync()) {
       _videoController?.dispose();
       _videoController = VideoPlayerController.file(file,
-          videoPlayerOptions: VideoPlayerOptions(allowBackgroundPlayback: true))
+          videoPlayerOptions: VideoPlayerOptions(
+            allowBackgroundPlayback: true,
+            mixWithOthers: true,
+          ))
         ..initialize().then((_) async {
           _videoController?.play();
           setState(() {});

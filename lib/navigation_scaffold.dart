@@ -1,15 +1,12 @@
 import 'package:blur_bottom_bar/blur_bottom_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:symphony/screens/navigation_pages/downloads_screen.dart';
 import 'package:symphony/screens/navigation_pages/info_screen.dart';
 import 'package:symphony/screens/navigation_pages/media_screen.dart';
 import 'package:symphony/screens/navigation_pages/search_screen.dart';
-import 'package:video_player/video_player.dart';
-import 'dart:io';
 import 'screens/player/video_player_sheet.dart';
 
 class VideoPlayerChangeNotifier extends ChangeNotifier {

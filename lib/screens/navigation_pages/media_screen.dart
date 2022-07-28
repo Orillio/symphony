@@ -82,6 +82,7 @@ class __MediaScreenState extends State<_MediaScreen>
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
                         return MediaItem(
+                          key: UniqueKey(),
                           model: snapshot.data![index],
                           hasDivider: index != snapshot.data!.length - 1,
                         );
