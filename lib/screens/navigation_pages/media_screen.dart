@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:provider/provider.dart';
 import 'package:symphony/api/api_downloads/downloads_api.dart';
-import 'package:symphony/components/media_item.dart';
+import 'package:symphony/components/media_list_item.dart';
 import 'package:symphony/components/shared/search_field.dart';
 
 import '../../components/shared/action_button.dart';
@@ -12,7 +11,7 @@ GlobalKey mediaScreenKey = GlobalKey();
 
 class MediaScreenChangeNotifier extends ChangeNotifier {
   var searchFieldController = TextEditingController();
-  Future<List<VideoData>>? mediaFuture;
+  Future<List<MediaFile>>? mediaFuture;
 }
 
 class MediaScreen extends StatelessWidget {
@@ -72,7 +71,7 @@ class __MediaScreenState extends State<_MediaScreen>
                 hintText: "Искать в медиатеке",
               ),
             ),
-            FutureBuilder<List<VideoData>>(
+            FutureBuilder<List<MediaFile>>(
               future: model.mediaFuture,
               builder: (context, snapshot) {
                 if(snapshot.hasData) {
@@ -81,7 +80,7 @@ class __MediaScreenState extends State<_MediaScreen>
                       shrinkWrap: true,
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
-                        return MediaItem(
+                        return MediaListItem(
                           key: UniqueKey(),
                           model: snapshot.data![index],
                           hasDivider: index != snapshot.data!.length - 1,

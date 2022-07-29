@@ -16,7 +16,6 @@ class _VideoPlayerSheetState extends State<VideoPlayerSheet>
   late double _screenHeight;
   VideoPlayerChangeNotifier? model;
   bool _canDrag = true;
-  bool _alreadyWatching = false;
 
   open() {
     model!.bottomSheetAnimationController.duration = model!.defaultDuration;
@@ -98,7 +97,7 @@ class _VideoPlayerSheetState extends State<VideoPlayerSheet>
                 );
               },
             )
-          : SizedBox.shrink(),
+          : const SizedBox.shrink(),
     );
   }
 }

@@ -2,37 +2,39 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
+import 'package:symphony/api/api_downloads/downloads_api.dart';
 import 'package:symphony/screens/player/player_screen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
 import '../navigation_scaffold.dart';
 
-class MediaItem extends StatefulWidget {
-  final VideoData model;
+class MediaListItem extends StatefulWidget {
+  final MediaFile model;
   final bool hasDivider;
 
-  const MediaItem({required this.model, required this.hasDivider, Key? key})
+  const MediaListItem({required this.model, required this.hasDivider, Key? key})
       : super(key: key);
 
   @override
-  State<MediaItem> createState() => _MediaItemState();
+  State<MediaListItem> createState() => _MediaItemState();
 }
 
-class _MediaItemState extends State<MediaItem> {
-  late Future<Uint8List?> thumbnailData;
+class _MediaItemState extends State<MediaListItem> {
+  Future<Uint8List?>? thumbnailData;
   late DateTime changedDate;
   var _containerColor = Colors.transparent;
 
   @override
   void initState() {
     super.initState();
-    changedDate = FileStat.statSync(widget.model.path!).changed;
-    thumbnailData =
-        VideoThumbnail.thumbnailData(video: widget.model.path!, timeMs: 20000);
+    changedDate = FileStat.statSync(widget.model.path).changed;
+    if (widget.model.mimetype.contains("video")) {
+      thumbnailData = VideoThumbnail.thumbnailData(
+          video: widget.model.path, timeMs: 20000);
+    }
   }
 
   String durationToMinutes(double duration) {
@@ -79,24 +81,30 @@ class _MediaItemState extends State<MediaItem> {
               Flexible(
                 flex: 1,
                 child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: FutureBuilder<Uint8List?>(
-                      future: thumbnailData,
-                      builder: (context, sn) {
-                        if (sn.hasData) {
-                          return Image.memory(
-                            sn.data!,
-                            width: 60,
-                            height: 50,
-                          );
-                        } else {
-                          return const SizedBox(
-                            width: 60,
-                            height: 50,
-                          );
-                        }
-                      },
-                    )),
+                  padding: const EdgeInsets.all(2),
+                  child: thumbnailData != null
+                      ? FutureBuilder<Uint8List?>(
+                          future: thumbnailData,
+                          builder: (context, sn) {
+                            if (sn.hasData) {
+                              return Image.memory(
+                                sn.data!,
+                                width: 60,
+                                height: 50,
+                              );
+                            } else {
+                              return const SizedBox(
+                                width: 60,
+                                height: 50,
+                              );
+                            }
+                          },
+                        )
+                      : const SizedBox(
+                          width: 60,
+                          height: 50,
+                        ),
+                ),
               ),
               Flexible(
                 flex: 5,
@@ -118,7 +126,7 @@ class _MediaItemState extends State<MediaItem> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Text(
-                                    widget.model.title!,
+                                    widget.model.title,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(color: Colors.white),
                                   ),
@@ -130,9 +138,9 @@ class _MediaItemState extends State<MediaItem> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        "${durationToMinutes(widget.model.duration!)}:"
-                                        "${durationToRemainderSeconds(widget.model.duration!)} | "
-                                        "${(widget.model.filesize! / (1024 * 1024)).toStringAsFixed(1)} MB",
+                                        "${durationToMinutes(widget.model.duration)}:"
+                                        "${durationToRemainderSeconds(widget.model.duration)} | "
+                                        "${(widget.model.fileSize / (1024 * 1024)).toStringAsFixed(1)} MB",
                                         maxLines: 1,
                                         style:
                                             const TextStyle(color: Colors.grey),

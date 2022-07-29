@@ -1,53 +1,53 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:symphony/api/api_downloads/downloads_api.dart';
+import 'package:symphony/api/player/player_audio_handler.dart';
 import 'package:symphony/navigation_scaffold.dart';
 import 'package:video_player/video_player.dart';
 
-GlobalKey<_PlayerScreenState> playerKey = GlobalKey();
+GlobalKey<PlayerScreenState> playerKey = GlobalKey();
 
 class PlayerScreen extends StatefulWidget {
   PlayerScreen() : super(key: playerKey);
 
   @override
-  State<PlayerScreen> createState() => _PlayerScreenState();
+  State<PlayerScreen> createState() => PlayerScreenState();
 }
 
-class _PlayerScreenState extends State<PlayerScreen> {
+class PlayerScreenState extends State<PlayerScreen> {
+  MediaFile? _model;
+  VideoPlayerController? videoController;
 
-  VideoData? _model;
-  VideoPlayerController? _videoController;
+  MediaFile? get model => _model;
 
-  VideoData? get model => _model;
-  set model(VideoData? model) {
-    if(model == null || model == _model) return;
+  set model(MediaFile? model) {
+    if (model == null || model == _model) return;
     _model = model;
-    var file = File(_model!.path!);
+    var file = File(_model!.path);
     if (file.existsSync()) {
-      _videoController?.dispose();
-      _videoController = VideoPlayerController.file(file,
+      videoController?.dispose();
+      videoController = VideoPlayerController.file(file,
           videoPlayerOptions: VideoPlayerOptions(
             allowBackgroundPlayback: true,
             mixWithOthers: true,
           ))
         ..initialize().then((_) async {
-          _videoController?.play();
+          videoController?.play();
+          await PlayerAudioHandler.instance.play();
           setState(() {});
         });
     }
   }
 
-
-
   @override
   void dispose() {
-    _videoController?.dispose();
+    videoController?.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     var videoPlayerModel = context.read<VideoPlayerChangeNotifier>();
@@ -55,9 +55,16 @@ class _PlayerScreenState extends State<PlayerScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           setState(() {
-            _videoController!.value.isPlaying
-                ? _videoController?.pause()
-                : _videoController?.play();
+            if (videoController!.value.isPlaying) {
+              videoController?.pause();
+              PlayerAudioHandler.instance.pause();
+              
+
+            } else {
+              videoController?.play();
+              PlayerAudioHandler.instance.play();
+
+            }
           });
         },
       ),
@@ -81,7 +88,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   ),
                 ),
                 SliderTheme(
-                  data: SliderThemeData(),
+                  data: const SliderThemeData(),
                   child: Slider(
                     value: 0.3,
                     onChanged: (double value) {},
@@ -94,11 +101,11 @@ class _PlayerScreenState extends State<PlayerScreen> {
               ],
             ),
           ),
-          if (_videoController != null && _videoController!.value.isInitialized)
+          if (videoController != null && videoController!.value.isInitialized)
             Center(
               child: AspectRatio(
-                aspectRatio: _videoController!.value.aspectRatio,
-                child: VideoPlayer(_videoController!),
+                aspectRatio: videoController!.value.aspectRatio,
+                child: VideoPlayer(videoController!),
               ),
             ),
         ],
