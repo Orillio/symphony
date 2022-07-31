@@ -104,7 +104,7 @@ class _SearchFieldState extends State<SearchField> {
                   ? GestureDetector(
                       onTap: _onClear,
                       child: Icon(
-                        key: Key("clear_button"),
+                        key: const Key("clear_button"),
                         CupertinoIcons.clear_circled_solid,
                         color: Get.theme.iconTheme.color,
                       ),
@@ -117,7 +117,7 @@ class _SearchFieldState extends State<SearchField> {
         ActionButton(
           color: _color,
           width: _width,
-          text: Text(
+          text: const Text(
             "Отменить"
           ),
         )

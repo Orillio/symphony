@@ -1,54 +1,69 @@
 import 'dart:io';
 import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
+import 'package:symphony/api/api_downloads/downloads_api.dart';
+import 'package:symphony/screens/navigation_pages/media_screen.dart';
+import 'package:symphony/screens/player/player_screen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
-class MediaItem extends StatefulWidget {
-  final VideoData model;
+import '../navigation_scaffold.dart';
+
+class MediaListItem extends StatefulWidget {
+  final MediaFile model;
   final bool hasDivider;
 
-  const MediaItem({required this.model, required this.hasDivider, Key? key})
+  const MediaListItem({required this.model, required this.hasDivider, Key? key})
       : super(key: key);
 
   @override
-  State<MediaItem> createState() => _MediaItemState();
+  State<MediaListItem> createState() => _MediaItemState();
 }
 
-class _MediaItemState extends State<MediaItem> {
-  late Future<Uint8List?> thumbnailData;
+class _MediaItemState extends State<MediaListItem> {
+  Future<Uint8List?>? thumbnailData;
   late DateTime changedDate;
   var _containerColor = Colors.transparent;
 
   @override
   void initState() {
     super.initState();
-    changedDate = FileStat.statSync(widget.model.path!).changed;
-    thumbnailData = VideoThumbnail.thumbnailData(video: widget.model.path!);
+    changedDate = FileStat.statSync(widget.model.path).changed;
+    if (widget.model.mediaType == MediaType.video) {
+      thumbnailData =
+          VideoThumbnail.thumbnailData(video: widget.model.path, timeMs: 20000);
+    }
   }
 
   String durationToMinutes(double duration) {
     int result = (duration / (1000 * 60)).floor();
     return result < 10 ? "0$result" : "$result";
   }
+
   String durationToRemainderSeconds(double duration) {
     int result = ((duration / 1000) % 60).round();
     return result < 10 ? "0$result" : "$result";
   }
-  String appendZero(int item){
+
+  String appendZero(int item) {
     return item < 10 ? "0$item" : "$item";
   }
 
   @override
   Widget build(BuildContext context) {
-
+    var videoChangeNotifier = context.read<VideoPlayerChangeNotifier>();
+    var mediaChangeNotifier = context.read<MediaScreenChangeNotifier>();
     return GestureDetector(
+      onTap: () async {
+        await Future.delayed(const Duration(milliseconds: 300));
+        await playerKey.currentState?.prepare(widget.model, await mediaChangeNotifier.mediaFuture!);
+        videoChangeNotifier.openBottomSheet();
+      },
       onTapUp: (_) async {
-        await Future.delayed(const Duration(milliseconds: 260));
+        await Future.delayed(const Duration(milliseconds: 300));
         setState(() {
           _containerColor = Colors.transparent;
         });
@@ -68,21 +83,30 @@ class _MediaItemState extends State<MediaItem> {
               Flexible(
                 flex: 1,
                 child: Padding(
-                    padding: const EdgeInsets.all(2),
-                    child: FutureBuilder<Uint8List?>(
-                      future: thumbnailData,
-                      builder: (context, sn) {
-                        if (sn.hasData) {
-                          return Image.memory(
-                            sn.data!,
-                            width: 60,
-                            height: 50,
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      },
-                    )),
+                  padding: const EdgeInsets.all(2),
+                  child: thumbnailData != null
+                      ? FutureBuilder<Uint8List?>(
+                          future: thumbnailData,
+                          builder: (context, sn) {
+                            if (sn.hasData) {
+                              return Image.memory(
+                                sn.data!,
+                                width: 60,
+                                height: 50,
+                              );
+                            } else {
+                              return const SizedBox(
+                                width: 60,
+                                height: 50,
+                              );
+                            }
+                          },
+                        )
+                      : const SizedBox(
+                          width: 60,
+                          height: 50,
+                        ),
+                ),
               ),
               Flexible(
                 flex: 5,
@@ -104,7 +128,7 @@ class _MediaItemState extends State<MediaItem> {
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
                                   Text(
-                                    widget.model.title!,
+                                    widget.model.title,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(color: Colors.white),
                                   ),
@@ -116,16 +140,18 @@ class _MediaItemState extends State<MediaItem> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        "${durationToMinutes(widget.model.duration!)}:"
-                                        "${durationToRemainderSeconds(widget.model.duration!)} | "
-                                        "${(widget.model.filesize! / (1024 * 1024)).toStringAsFixed(1)} MB",
+                                        "${durationToMinutes(widget.model.duration)}:"
+                                        "${durationToRemainderSeconds(widget.model.duration)} | "
+                                        "${(widget.model.fileSize / (1024 * 1024)).toStringAsFixed(1)} MB",
                                         maxLines: 1,
-                                        style: const TextStyle(color: Colors.grey),
+                                        style:
+                                            const TextStyle(color: Colors.grey),
                                       ),
                                       Text(
                                         "${appendZero(changedDate.day)}.${appendZero(changedDate.month)}.${changedDate.year}",
                                         maxLines: 1,
-                                        style: const TextStyle(color: Colors.grey),
+                                        style:
+                                            const TextStyle(color: Colors.grey),
                                       ),
                                     ],
                                   )
@@ -152,7 +178,9 @@ class _MediaItemState extends State<MediaItem> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10,),
+                      const SizedBox(
+                        height: 10,
+                      ),
                       if (widget.hasDivider)
                         const Divider(
                           height: 0,

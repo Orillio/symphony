@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:symphony/api/api_youtube/yt_api_manager.dart';
-import 'package:symphony/api/models/i_search_model.dart';
 import 'package:symphony/components/shared/search_field.dart';
 import 'package:symphony/components/search_item.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';

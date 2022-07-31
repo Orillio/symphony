@@ -1,8 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:symphony/api/api_youtube/yt_api_manager.dart';
-
-import 'package:symphony/main.dart';
 
 
 void main() {

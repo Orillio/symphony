@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_video_info/flutter_video_info.dart';
 import 'package:provider/provider.dart';
 import 'package:symphony/api/api_downloads/downloads_api.dart';
-import 'package:symphony/components/media_item.dart';
+import 'package:symphony/components/media_list_item.dart';
 import 'package:symphony/components/shared/search_field.dart';
 
 import '../../components/shared/action_button.dart';
@@ -12,23 +11,20 @@ GlobalKey mediaScreenKey = GlobalKey();
 
 class MediaScreenChangeNotifier extends ChangeNotifier {
   var searchFieldController = TextEditingController();
-  Future<List<VideoData>>? mediaFuture;
+  Future<List<MediaFile>>? mediaFuture;
 }
 
 class MediaScreen extends StatelessWidget {
   const MediaScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) =>
-      ChangeNotifierProvider(
+  Widget build(BuildContext context) => ChangeNotifierProvider(
         create: (_) => MediaScreenChangeNotifier(),
         child: _MediaScreen(key: mediaScreenKey),
       );
 }
 
-
 class _MediaScreen extends StatefulWidget {
-
   const _MediaScreen({Key? key}) : super(key: key);
 
   @override
@@ -36,7 +32,7 @@ class _MediaScreen extends StatefulWidget {
 }
 
 class __MediaScreenState extends State<_MediaScreen>
-  with AutomaticKeepAliveClientMixin<_MediaScreen>{
+    with AutomaticKeepAliveClientMixin<_MediaScreen> {
   final String title = "Медиатека";
 
   final downloads = DownloadsApi();
@@ -72,24 +68,24 @@ class __MediaScreenState extends State<_MediaScreen>
                 hintText: "Искать в медиатеке",
               ),
             ),
-            FutureBuilder<List<VideoData>>(
+            FutureBuilder<List<MediaFile>>(
               future: model.mediaFuture,
               builder: (context, snapshot) {
-                if(snapshot.hasData) {
+                if (snapshot.hasData) {
                   return Expanded(
                     child: ListView.builder(
                       shrinkWrap: true,
                       itemCount: snapshot.data!.length,
                       itemBuilder: (context, index) {
-                        return MediaItem(
+                        return MediaListItem(
+                          key: UniqueKey(),
                           model: snapshot.data![index],
                           hasDivider: index != snapshot.data!.length - 1,
                         );
                       },
                     ),
                   );
-                }
-                else {
+                } else {
                   return Padding(
                     padding: EdgeInsets.only(
                       top: MediaQuery.of(context).size.height * 0.3,

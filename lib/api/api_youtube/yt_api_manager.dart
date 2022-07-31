@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart' as pp;
 import 'package:symphony/api/i_api_manager.dart';
-import 'package:symphony/api/models/i_search_model.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YtApiManager implements IApiManager {
@@ -45,18 +44,16 @@ class YtApiManager implements IApiManager {
     _downloadBroadcastStream = _yt.videos.streams.get(muxedVideo).asBroadcastStream();
     if(_downloadBroadcastStream == null) return;
 
-    var directory = await pp.getApplicationDocumentsDirectory();
-    var downloads = Directory(directory.path);
-    var videoTitle = video.title.replaceAll(r'\', '')
-      .replaceAll('/', '')
-      .replaceAll('*', '')
-      .replaceAll('?', '')
-      .replaceAll('"', '')
-      .replaceAll('<', '')
-      .replaceAll('>', '')
-      .replaceAll('|', '');
+    var documentsDir = await pp.getApplicationDocumentsDirectory();
+    var appDir = Directory('${documentsDir.path}/Symphony');
+    if(!await appDir.exists()) {
+      await appDir.create();
+    }
+    var videoTitle = video.title.replaceAll(RegExp('[^a-zA-Z-()& _.0-9]'), '')
+                                .replaceAll(' ', '_');
 
-    var newFile = File("${downloads.path}/${fileName ?? videoTitle}.${muxedVideo.container.name}");
+
+    var newFile = File("${appDir.path}/${fileName ?? videoTitle}.${muxedVideo.container.name}");
 
     if (newFile.existsSync()) {
       if(hasLogger) _logger.i("The file with this name already exists. Rewriting it...");
