@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:symphony/api/api_downloads/downloads_api.dart';
+import 'package:symphony/screens/navigation_pages/media_screen.dart';
 import 'package:symphony/screens/player/player_screen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -31,9 +32,9 @@ class _MediaItemState extends State<MediaListItem> {
   void initState() {
     super.initState();
     changedDate = FileStat.statSync(widget.model.path).changed;
-    if (widget.model.mimetype.contains("video")) {
-      thumbnailData = VideoThumbnail.thumbnailData(
-          video: widget.model.path, timeMs: 20000);
+    if (widget.model.mediaType == MediaType.video) {
+      thumbnailData =
+          VideoThumbnail.thumbnailData(video: widget.model.path, timeMs: 20000);
     }
   }
 
@@ -53,12 +54,13 @@ class _MediaItemState extends State<MediaListItem> {
 
   @override
   Widget build(BuildContext context) {
-    var model = context.read<VideoPlayerChangeNotifier>();
+    var videoChangeNotifier = context.read<VideoPlayerChangeNotifier>();
+    var mediaChangeNotifier = context.read<MediaScreenChangeNotifier>();
     return GestureDetector(
       onTap: () async {
         await Future.delayed(const Duration(milliseconds: 300));
-        playerKey.currentState?.model = widget.model;
-        model.openBottomSheet();
+        await playerKey.currentState?.prepare(widget.model, await mediaChangeNotifier.mediaFuture!);
+        videoChangeNotifier.openBottomSheet();
       },
       onTapUp: (_) async {
         await Future.delayed(const Duration(milliseconds: 300));

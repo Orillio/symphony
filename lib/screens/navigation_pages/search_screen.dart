@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:symphony/components/dark_segmented_control.dart';
@@ -59,8 +58,8 @@ class __SearchScreenState extends StatelessWidget {
     ),
   };
   List<Widget> tabs = [
-    YtSearchPage(),
-    VkSearchPage(),
+    const YtSearchPage(),
+    const VkSearchPage(),
   ];
   @override
   Widget build(BuildContext context) {

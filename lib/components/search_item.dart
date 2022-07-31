@@ -108,14 +108,14 @@ class __SearchItemState extends State<_SearchItem> {
                                       widget.model.author,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(color: Colors.grey),
+                                      style: const TextStyle(color: Colors.grey),
                                     ),
                                   ),
                                   Text(
                                     "${(widget.model.duration!.inSeconds / 60).round()}:"
                                     "${widget.model.duration!.inSeconds % 60}",
                                     maxLines: 1,
-                                    style: TextStyle(color: Colors.grey),
+                                    style: const TextStyle(color: Colors.grey),
                                   ),
                                 ],
                               )

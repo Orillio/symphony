@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart' as pp;
 import 'package:symphony/api/i_api_manager.dart';
-import 'package:symphony/api/models/i_search_model.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YtApiManager implements IApiManager {

@@ -18,16 +18,13 @@ class MediaScreen extends StatelessWidget {
   const MediaScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) =>
-      ChangeNotifierProvider(
+  Widget build(BuildContext context) => ChangeNotifierProvider(
         create: (_) => MediaScreenChangeNotifier(),
         child: _MediaScreen(key: mediaScreenKey),
       );
 }
 
-
 class _MediaScreen extends StatefulWidget {
-
   const _MediaScreen({Key? key}) : super(key: key);
 
   @override
@@ -35,7 +32,7 @@ class _MediaScreen extends StatefulWidget {
 }
 
 class __MediaScreenState extends State<_MediaScreen>
-  with AutomaticKeepAliveClientMixin<_MediaScreen>{
+    with AutomaticKeepAliveClientMixin<_MediaScreen> {
   final String title = "Медиатека";
 
   final downloads = DownloadsApi();
@@ -74,7 +71,7 @@ class __MediaScreenState extends State<_MediaScreen>
             FutureBuilder<List<MediaFile>>(
               future: model.mediaFuture,
               builder: (context, snapshot) {
-                if(snapshot.hasData) {
+                if (snapshot.hasData) {
                   return Expanded(
                     child: ListView.builder(
                       shrinkWrap: true,
@@ -88,8 +85,7 @@ class __MediaScreenState extends State<_MediaScreen>
                       },
                     ),
                   );
-                }
-                else {
+                } else {
                   return Padding(
                     padding: EdgeInsets.only(
                       top: MediaQuery.of(context).size.height * 0.3,

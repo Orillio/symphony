@@ -6,7 +6,7 @@ class AppThemes {
     primaryColorDark: const Color(0xFF6b6b6b),
     primaryColorLight: Colors.white,
 
-    iconTheme: IconThemeData(
+    iconTheme: const IconThemeData(
       color: Color(0xFF98989f)
     ),
 

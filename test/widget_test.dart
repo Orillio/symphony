@@ -5,12 +5,12 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
+// import 'package:flutter/material.dart';
+// import 'package:flutter_test/flutter_test.dart';
 
-import 'package:symphony/main.dart';
+// import 'package:symphony/main.dart';
 
-void main() {
+// void main() {
   // testWidgets('Counter increments smoke test', (WidgetTester tester) async {
   //   // Build our app and trigger a frame.
   //   await tester.pumpWidget(const SymphonyApp());
@@ -28,11 +28,11 @@ void main() {
   //   expect(find.text('1'), findsOneWidget);
   // });
 
-  group("example testing", () {
+//   group("example testing", () {
 
-    //Nothing to test rn.
-    test("example 1", () {
-      expect("1", "1");
-    });
-  });
-}
+//     //Nothing to test rn.
+//     test("example 1", () {
+//       expect("1", "1");
+//     });
+//   });
+// }

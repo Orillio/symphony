@@ -32,17 +32,15 @@ class _ActionButtonState extends State<ActionButton> {
           });
           FocusScope.of(context).unfocus();
         },
-        child: Container(
-          child: Center(
-            child: AnimatedDefaultTextStyle(
-              maxLines: 1,
-              style: TextStyle(
-                  color: widget.color,
-                  fontSize: 16
-              ),
-              duration: const Duration(milliseconds: 150),
-              child: widget.text,
+        child: Center(
+          child: AnimatedDefaultTextStyle(
+            maxLines: 1,
+            style: TextStyle(
+                color: widget.color,
+                fontSize: 16
             ),
+            duration: const Duration(milliseconds: 150),
+            child: widget.text,
           ),
         ),
       ),

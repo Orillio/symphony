@@ -50,12 +50,12 @@ class NavigationScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ChangeNotifierProvider(
         create: (_) => NavigationModel(),
-        child: _NavigationScaffold(),
+        child: const _NavigationScaffold(),
       );
 }
 
 class _NavigationScaffold extends StatelessWidget {
-  _NavigationScaffold({Key? key}) : super(key: key);
+  const _NavigationScaffold({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +118,7 @@ class _NavigationScaffold extends StatelessWidget {
                   ),
                 ],
               ),
-              VideoPlayerSheet(),
+              const VideoPlayerSheet(),
             ],
           ),
         ),
