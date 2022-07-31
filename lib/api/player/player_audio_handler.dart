@@ -60,7 +60,7 @@ class PlayerAudioHandler extends BaseAudioHandler
       MediaItem(
         id: const Uuid().v4(),
         title: mediaFile.title,
-        duration: Duration(milliseconds: mediaFile.duration.round()),
+        duration: mediaFile.duration,
       ),
     );
     this.queue.add(
@@ -68,7 +68,7 @@ class PlayerAudioHandler extends BaseAudioHandler
         return MediaItem(
           id: const Uuid().v4(),
           title: e.title,
-          duration: Duration(milliseconds: e.duration.round()),
+          duration: e.duration,
         );
       }).toList(),
     );

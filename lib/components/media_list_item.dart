@@ -38,13 +38,13 @@ class _MediaItemState extends State<MediaListItem> {
     }
   }
 
-  String durationToMinutes(double duration) {
-    int result = (duration / (1000 * 60)).floor();
-    return result < 10 ? "0$result" : "$result";
+  String durationToMinutes(Duration duration) {
+    var minutes = duration.inMinutes;
+    return minutes < 10 ? "0$minutes" : "$minutes";
   }
 
-  String durationToRemainderSeconds(double duration) {
-    int result = ((duration / 1000) % 60).round();
+  String durationToRemainderSeconds(Duration duration) {
+    int result = duration.inSeconds % 60;
     return result < 10 ? "0$result" : "$result";
   }
 
@@ -59,7 +59,8 @@ class _MediaItemState extends State<MediaListItem> {
     return GestureDetector(
       onTap: () async {
         await Future.delayed(const Duration(milliseconds: 300));
-        await playerKey.currentState?.prepare(widget.model, await mediaChangeNotifier.mediaFuture!);
+        await playerKey.currentState
+            ?.prepare(widget.model, await mediaChangeNotifier.mediaFuture!);
         videoChangeNotifier.openBottomSheet();
       },
       onTapUp: (_) async {
