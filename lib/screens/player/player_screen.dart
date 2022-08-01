@@ -1,16 +1,19 @@
 import 'dart:io';
 import 'dart:math';
-import 'dart:ui';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
+import 'package:perfect_volume_control/perfect_volume_control.dart';
 import 'package:provider/provider.dart';
 import 'package:symphony/api/api_downloads/downloads_api.dart';
 import 'package:symphony/api/player/player_audio_handler.dart';
 import 'package:symphony/components/shared/blur_container.dart';
+import 'package:symphony/components/shared/icon_pressing_animation.dart';
+import 'package:symphony/components/shared/volume_bar.dart';
 import 'package:symphony/navigation_scaffold.dart';
 import 'package:symphony/themes/themes.dart';
 import 'package:video_player/video_player.dart';
@@ -29,6 +32,9 @@ class PlayerScreenState extends State<PlayerScreen> {
   List<MediaFile>? _queue;
   VideoPlayerController? _videoController;
   late PlayerAudioHandler _handler;
+
+  // current volume, notifies the volume bar if changes.
+  late ValueNotifier<double> _currentVolume = ValueNotifier(0.0);
 
   // for tracking current position of song
   Duration _currentPosition = const Duration();
@@ -98,6 +104,10 @@ class PlayerScreenState extends State<PlayerScreen> {
     setState(() {});
   }
 
+  void _onVolumeChange(double value) {
+    _currentVolume.value = value;
+  }
+
   @override
   void initState() {
     _handler = PlayerAudioHandler();
@@ -105,6 +115,7 @@ class PlayerScreenState extends State<PlayerScreen> {
     _handler.playEvent.listen(_onPlay);
     _handler.pauseEvent.listen(_onPause);
     _handler.seekEvent.listen(_onSeek);
+    PerfectVolumeControl.stream.listen(_onVolumeChange);
 
     super.initState();
   }
@@ -119,15 +130,6 @@ class PlayerScreenState extends State<PlayerScreen> {
   Widget build(BuildContext context) {
     if (_videoController != null && _videoController!.value.isInitialized) {
       return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            if (_videoController!.value.isPlaying) {
-              _handler.pause();
-            } else {
-              _handler.play();
-            }
-          },
-        ),
         body: Stack(
           children: [
             Center(
@@ -218,16 +220,16 @@ class PlayerScreenState extends State<PlayerScreen> {
                 );
               },
             ),
-            const Positioned(
+            Positioned(
               bottom: 0,
               left: 0,
               right: 0,
               child: BlurContainer(
-                height: 100,
-                alignment: Alignment.bottomCenter,
-                // child: OrientationBuilder(builder: (context, orientation) {
-                //   return Grid
-                // }),
+                height:
+                    MediaQuery.of(context).orientation == Orientation.portrait
+                        ? 200
+                        : 70,
+                child: _portraitOrientedControls(),
               ),
             ),
           ],
@@ -236,5 +238,77 @@ class PlayerScreenState extends State<PlayerScreen> {
     } else {
       return const SizedBox.shrink();
     }
+  }
+
+  Widget _portraitOrientedControls() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 100,
+          width: MediaQuery.of(context).size.width * 0.85,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Icon(
+                CupertinoIcons.repeat,
+                size: 20,
+              ),
+              IconPressingAnimation(
+                onPress: () {},
+                child: const Icon(
+                  CupertinoIcons.backward_fill,
+                  size: 35,
+                  color: Colors.white,
+                ),
+              ),
+              IconPressingAnimation(
+                onPress: () {
+                  _videoController!.value.isPlaying
+                      ? _handler.pause()
+                      : _handler.play();
+                },
+                child: Icon(
+                  _videoController!.value.isPlaying
+                      ? CupertinoIcons.pause_circle_fill
+                      : CupertinoIcons.play_circle_fill,
+                  size: 50,
+                  color: Colors.white,
+                ),
+              ),
+              IconPressingAnimation(
+                onPress: () {},
+                child: const Icon(
+                  CupertinoIcons.forward_fill,
+                  size: 35,
+                  color: Colors.white,
+                ),
+              ),
+              const Icon(
+                CupertinoIcons.shuffle,
+                size: 20,
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          width: MediaQuery.of(context).size.width * 0.85,
+          height: 30,
+          child: ValueListenableBuilder(
+            valueListenable: _currentVolume,
+            builder: (context, value, _) {
+              return VolumeBar(
+                currentVolume: _currentVolume.value,
+                onDragUpdate: (volume) async {
+                  await PerfectVolumeControl.setVolume(volume);
+                  setState(() {});
+                },
+                onVolumeIconPress: () {},
+              );
+            },
+          ),
+        )
+      ],
+    );
   }
 }

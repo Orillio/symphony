@@ -22,6 +22,8 @@ class PlayerAudioHandler extends BaseAudioHandler
       StreamController.broadcast();
   final StreamController<PlaybackState> _seekEventController =
       StreamController.broadcast();
+  final StreamController<double> _volumeEventController =
+      StreamController.broadcast();
   Stream<PlaybackState> get playEvent {
     return _playEventController.stream;
   }
@@ -64,14 +66,22 @@ class PlayerAudioHandler extends BaseAudioHandler
       ),
     );
     this.queue.add(
-      queue.map((e) {
-        return MediaItem(
-          id: const Uuid().v4(),
-          title: e.title,
-          duration: e.duration,
+          queue.map((e) {
+            return MediaItem(
+              id: const Uuid().v4(),
+              title: e.title,
+              duration: e.duration,
+            );
+          }).toList(),
         );
-      }).toList(),
-    );
+  }
+
+  @override
+  Future customAction(String name, [Map<String, dynamic>? extras]) async {
+    if (name == "setVolume") {
+      _volumeEventController.add(extras!['value']);
+      pause();
+    }
   }
 
   @override
