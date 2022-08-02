@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:symphony/themes/themes.dart';
 
 class VolumeBar extends StatefulWidget {
   const VolumeBar({

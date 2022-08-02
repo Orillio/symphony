@@ -34,7 +34,7 @@ class PlayerScreenState extends State<PlayerScreen> {
   late PlayerAudioHandler _handler;
 
   // current volume, notifies the volume bar if changes.
-  late ValueNotifier<double> _currentVolume = ValueNotifier(0.0);
+  late final ValueNotifier<double> _currentVolume = ValueNotifier(0.0);
 
   // for tracking current position of song
   Duration _currentPosition = const Duration();
@@ -47,8 +47,8 @@ class PlayerScreenState extends State<PlayerScreen> {
   /// Preparing for new video/audio session, setting new video/audio
   /// file to be played.
   Future<void> prepare(MediaFile mediaFile, List<MediaFile> queue,
-      {bool overrideCurrentMedia = false}) async {
-    if (mediaFile == _currentMediaFile || overrideCurrentMedia) return;
+      {bool overwriteCurrentMedia = false}) async {
+    if (mediaFile == _currentMediaFile || overwriteCurrentMedia) return;
 
     await PlayerAudioHandler().init(mediaFile, queue);
     await _setCurrentMediaFile(mediaFile);
