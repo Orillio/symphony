@@ -24,6 +24,9 @@ class PlayerAudioHandler extends BaseAudioHandler
       StreamController.broadcast();
   final StreamController<double> _volumeEventController =
       StreamController.broadcast();
+  final StreamController<PlaybackState> _skipEventController =
+      StreamController.broadcast();
+
   Stream<PlaybackState> get playEvent {
     return _playEventController.stream;
   }
@@ -36,7 +39,12 @@ class PlayerAudioHandler extends BaseAudioHandler
     return _seekEventController.stream;
   }
 
-  Future<void> init(MediaFile mediaFile, List<MediaFile> queue) async {
+  Stream<PlaybackState> get skipEvent {
+    return _skipEventController.stream;
+  }
+
+
+  Future<void> init(MediaFile mediaFile, List<MediaFile> queueMedia) async {
     playbackState.add(PlaybackState(
       // Which buttons should appear in the notification now
       controls: [
@@ -51,12 +59,15 @@ class PlayerAudioHandler extends BaseAudioHandler
         MediaAction.seek,
         MediaAction.seekForward,
         MediaAction.seekBackward,
+        MediaAction.skipToNext,
+        MediaAction.skipToPrevious,
+        MediaAction.skipToQueueItem,
       },
       androidCompactActionIndices: const [0, 1, 3],
       processingState: AudioProcessingState.idle,
       playing: true,
       speed: 1.0,
-      queueIndex: 0,
+      queueIndex: queueMedia.indexOf(mediaFile),
     ));
     mediaItem.add(
       MediaItem(
@@ -65,15 +76,15 @@ class PlayerAudioHandler extends BaseAudioHandler
         duration: mediaFile.duration,
       ),
     );
-    this.queue.add(
-          queue.map((e) {
-            return MediaItem(
-              id: const Uuid().v4(),
-              title: e.title,
-              duration: e.duration,
-            );
-          }).toList(),
+    queue.add(
+      queueMedia.map((e) {
+        return MediaItem(
+          id: const Uuid().v4(),
+          title: e.title,
+          duration: e.duration,
         );
+      }).toList(),
+    );
   }
 
   @override
@@ -111,6 +122,15 @@ class PlayerAudioHandler extends BaseAudioHandler
     _seekEventController.add(newState);
   }
 
-  // @override
-  // Future<void> skipToQueueItem(int i) async {}
+  @override
+  Future<void> skipToQueueItem(int index) async {
+    if (index < 0) return;
+    var clampedIndex = index % queue.value.length;
+
+    var newState = playbackState.value.copyWith(queueIndex: clampedIndex);
+    playbackState.add(newState);
+    mediaItem.add(queue.value[clampedIndex]);
+    _skipEventController.add(newState);
+    return super.skipToQueueItem(clampedIndex);
+  }
 }

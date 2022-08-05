@@ -33,8 +33,10 @@ class PlayerScreenState extends State<PlayerScreen> {
   VideoPlayerController? _videoController;
   late PlayerAudioHandler _handler;
 
+  int currentMediaIndex = 0;
+
   // current volume, notifies the volume bar if changes.
-  late final ValueNotifier<double> _currentVolume = ValueNotifier(0.0);
+  final ValueNotifier<double> _currentVolume = ValueNotifier(0.0);
 
   // for tracking current position of song
   Duration _currentPosition = const Duration();
@@ -50,7 +52,9 @@ class PlayerScreenState extends State<PlayerScreen> {
       {bool overwriteCurrentMedia = false}) async {
     if (mediaFile == _currentMediaFile || overwriteCurrentMedia) return;
 
-    await PlayerAudioHandler().init(mediaFile, queue);
+    _queue = queue;
+
+    await PlayerAudioHandler().init(mediaFile, _queue!);
     await _setCurrentMediaFile(mediaFile);
 
     var session = await AudioSession.instance;
@@ -60,7 +64,6 @@ class PlayerScreenState extends State<PlayerScreen> {
     if (await session.setActive(true)) {
       Logger().i("Audio session is set");
       await _setCurrentMediaFile(mediaFile);
-      _queue = queue;
     } else {
       Logger().i("Audio session denied..");
     }
@@ -78,6 +81,8 @@ class PlayerScreenState extends State<PlayerScreen> {
       await _videoController!.initialize();
       await _handler.play();
       setState(() {});
+
+      _videoController!.addListener(_onVideoTick);
     }
   }
 
@@ -104,8 +109,23 @@ class PlayerScreenState extends State<PlayerScreen> {
     setState(() {});
   }
 
+  Future _onSkip(PlaybackState value) async {
+    _setCurrentMediaFile(_queue![value.queueIndex!]);
+  }
+
   void _onVolumeChange(double value) {
     _currentVolume.value = value;
+  }
+
+  void _onVideoTick() {
+    if (_videoController!.value.position >= _videoController!.value.duration) {
+      _onVideoEnd();
+      _videoController?.removeListener(_onVideoTick);
+    }
+  }
+
+  void _onVideoEnd() {
+    _handler.skipToNext();
   }
 
   @override
@@ -115,8 +135,8 @@ class PlayerScreenState extends State<PlayerScreen> {
     _handler.playEvent.listen(_onPlay);
     _handler.pauseEvent.listen(_onPause);
     _handler.seekEvent.listen(_onSeek);
+    _handler.skipEvent.listen(_onSkip);
     PerfectVolumeControl.stream.listen(_onVolumeChange);
-
     super.initState();
   }
 
@@ -255,7 +275,9 @@ class PlayerScreenState extends State<PlayerScreen> {
                 size: 20,
               ),
               IconPressingAnimation(
-                onPress: () {},
+                onPress: () {
+                  _handler.skipToPrevious();
+                },
                 child: const Icon(
                   CupertinoIcons.backward_fill,
                   size: 35,
@@ -277,7 +299,9 @@ class PlayerScreenState extends State<PlayerScreen> {
                 ),
               ),
               IconPressingAnimation(
-                onPress: () {},
+                onPress: () {
+                  _handler.skipToNext();
+                },
                 child: const Icon(
                   CupertinoIcons.forward_fill,
                   size: 35,
