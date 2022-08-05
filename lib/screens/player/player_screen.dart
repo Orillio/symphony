@@ -64,6 +64,16 @@ class PlayerScreenState extends State<PlayerScreen> {
     if (await session.setActive(true)) {
       Logger().i("Audio session is set");
       await _setCurrentMediaFile(mediaFile);
+      session.interruptionEventStream.listen((event) {
+        if (event.begin) {
+          _handler.pause();
+        } else {
+          _handler.play();
+        }
+      });
+      session.becomingNoisyEventStream.listen((event) {
+        _handler.pause();
+      });
     } else {
       Logger().i("Audio session denied..");
     }
