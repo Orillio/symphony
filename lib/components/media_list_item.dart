@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-import 'package:symphony/api/api_downloads/downloads_api.dart';
-import 'package:symphony/screens/navigation_pages/media_screen.dart';
+import 'package:symphony/api/api_downloads/directory_manager.dart';
+import 'package:symphony/components/shared/item_pressing_animation.dart';
 import 'package:symphony/screens/player/player_screen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -26,8 +26,6 @@ class MediaListItem extends StatefulWidget {
 class _MediaItemState extends State<MediaListItem> {
   Future<Uint8List?>? thumbnailData;
   late DateTime changedDate;
-  var _containerColor = Colors.transparent;
-
   @override
   void initState() {
     super.initState();
@@ -56,28 +54,15 @@ class _MediaItemState extends State<MediaListItem> {
   Widget build(BuildContext context) {
     var videoChangeNotifier = context.read<VideoPlayerChangeNotifier>();
     var mediaChangeNotifier = context.read<MediaScreenChangeNotifier>();
-    return GestureDetector(
-      onTap: () async {
+
+    return ItemPressingAnimation(
+      onPress: () async {
         await Future.delayed(const Duration(milliseconds: 300));
         await playerKey.currentState
-            ?.prepare(widget.model, await mediaChangeNotifier.mediaFuture!);
+            ?.prepare(widget.model, await mediaChangeNotifier.media.value!);
         videoChangeNotifier.openBottomSheet();
       },
-      onTapUp: (_) async {
-        await Future.delayed(const Duration(milliseconds: 300));
-        setState(() {
-          _containerColor = Colors.transparent;
-        });
-      },
-      onTapDown: (_) async {
-        setState(() {
-          _containerColor = Colors.grey.shade900;
-        });
-      },
-      child: AnimatedContainer(
-        color: _containerColor,
-        duration: const Duration(milliseconds: 180),
-        child: Padding(
+      child: Padding(
           padding: const EdgeInsets.all(0),
           child: Row(
             children: [
@@ -195,7 +180,6 @@ class _MediaItemState extends State<MediaListItem> {
             ],
           ),
         ),
-      ),
     );
   }
 }

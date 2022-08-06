@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:perfect_volume_control/perfect_volume_control.dart';
 import 'package:provider/provider.dart';
-import 'package:symphony/api/api_downloads/downloads_api.dart';
+import 'package:symphony/api/api_downloads/directory_manager.dart';
 import 'package:symphony/api/player/player_audio_handler.dart';
 import 'package:symphony/components/shared/blur_container.dart';
 import 'package:symphony/components/shared/icon_pressing_animation.dart';

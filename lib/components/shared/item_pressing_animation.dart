@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 
-class IconPressingAnimation extends StatefulWidget {
-  const IconPressingAnimation({
+class ItemPressingAnimation extends StatefulWidget {
+  const ItemPressingAnimation({
     Key? key,
     required this.child,
     required this.onPress,
-    this.minScale = 0.8,
   }) : super(key: key);
 
   final Widget child;
-  final double minScale;
   final Function() onPress;
 
   @override
-  State<IconPressingAnimation> createState() => _IconPressingAnimationState();
+  State<ItemPressingAnimation> createState() => _ItemPressingAnimation();
 }
 
-class _IconPressingAnimationState extends State<IconPressingAnimation>
+class _ItemPressingAnimation extends State<ItemPressingAnimation>
     with TickerProviderStateMixin {
   late AnimationController controller;
 
@@ -33,14 +31,14 @@ class _IconPressingAnimationState extends State<IconPressingAnimation>
     super.initState();
     controller = AnimationController(
       vsync: this,
-      lowerBound: widget.minScale,
-      duration: const Duration(milliseconds: 100),
+      lowerBound: 0,
+      duration: const Duration(milliseconds: 200),
       value: 1,
     );
     controller.addStatusListener(_listener);
-    _isHolding.addListener(() {
+    _isHolding.addListener(() async {
       if (!_isHolding.value && controller.status == AnimationStatus.dismissed) {
-        controller.forward();
+        await controller.forward();
       }
     });
   }
@@ -51,6 +49,11 @@ class _IconPressingAnimationState extends State<IconPressingAnimation>
     }
   }
 
+  var colorTween = ColorTween(
+    begin: Colors.grey.shade900,
+    end: Colors.transparent,
+  );
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -59,7 +62,7 @@ class _IconPressingAnimationState extends State<IconPressingAnimation>
       },
       onTapDown: (details) async {
         _isHolding.value = true;
-        await controller.reverse();
+        controller.reverse();
       },
       onTapUp: (details) async {
         _isHolding.value = false;
@@ -69,14 +72,13 @@ class _IconPressingAnimationState extends State<IconPressingAnimation>
         controller.reverse();
       },
       child: AnimatedBuilder(
-        animation: controller,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: controller.value,
-            child: widget.child,
-          );
-        },
-      ),
+          animation: controller,
+          builder: (context, _) {
+            return Container(
+              color: colorTween.evaluate(controller),
+              child: widget.child,
+            );
+          }),
     );
   }
 }

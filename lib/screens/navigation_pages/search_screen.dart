@@ -43,7 +43,7 @@ class _SearchScreenState extends State<SearchScreen>
 class __SearchScreenState extends StatelessWidget {
   __SearchScreenState({Key? key}) : super(key: key);
 
-  Map<int, Widget> tabNames = {
+  final Map<int, Widget> tabNames = {
     0: const Text(
       "Youtube",
       style: TextStyle(
@@ -57,7 +57,7 @@ class __SearchScreenState extends StatelessWidget {
       ),
     ),
   };
-  List<Widget> tabs = [
+  final List<Widget> tabs = [
     const YtSearchPage(),
     const VkSearchPage(),
   ];

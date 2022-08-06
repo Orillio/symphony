@@ -4,7 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:symphony/screens/player/player_screen.dart';
 import 'package:uuid/uuid.dart';
 
-import '../api_downloads/downloads_api.dart';
+import '../api_downloads/directory_manager.dart';
 
 class PlayerAudioHandler extends BaseAudioHandler
     with QueueHandler, SeekHandler {
@@ -100,6 +100,7 @@ class PlayerAudioHandler extends BaseAudioHandler
     var newState = playbackState.value.copyWith(
         playing: true,
         updatePosition: playerKey.currentState!.getCurrentPosition());
+    
     playbackState.add(newState);
     _playEventController.add(newState);
   }

@@ -14,8 +14,17 @@ class MediaFile {
       this.path, this.title, this.fileSize, this.duration, this.mediaType);
 }
 
-class DownloadsApi {
+class DirectoryManager {
   final _videoInfo = FlutterVideoInfo();
+
+  DirectoryManager._();
+
+  static DirectoryManager? _instance;
+
+  static DirectoryManager get instance {
+    return _instance ??= DirectoryManager._();
+  }
+
 
   Future<List<MediaFile>> getVideosInDocumentsFolder() async {
     var documents = Directory(
