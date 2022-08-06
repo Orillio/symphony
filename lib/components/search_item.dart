@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:symphony/api/api_youtube/yt_api_manager.dart';
+import 'package:symphony/components/utils.dart';
 import 'package:symphony/navigation_scaffold.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
@@ -116,8 +117,8 @@ class __SearchItemState extends State<_SearchItem> {
                                     ),
                                   ),
                                   Text(
-                                    "${(widget.model.duration!.inSeconds / 60).round()}:"
-                                    "${widget.model.duration!.inSeconds % 60}",
+                                    "${Utils.durationToMinutes(widget.model.duration!)}:"
+                                    "${Utils.durationToRemainderSeconds(widget.model.duration!)}",
                                     maxLines: 1,
                                     style: const TextStyle(color: Colors.grey),
                                   ),

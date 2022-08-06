@@ -33,10 +33,8 @@ class PlayerScreenState extends State<PlayerScreen> {
   VideoPlayerController? _videoController;
   late PlayerAudioHandler _handler;
 
-  int currentMediaIndex = 0;
-
   // current volume, notifies the volume bar if changes.
-  final ValueNotifier<double> _currentVolume = ValueNotifier(0.0);
+  late final ValueNotifier<double> _currentVolume;
 
   // for tracking current position of song
   Duration _currentPosition = const Duration();
@@ -141,11 +139,15 @@ class PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
     _handler = PlayerAudioHandler();
-
     _handler.playEvent.listen(_onPlay);
     _handler.pauseEvent.listen(_onPause);
     _handler.seekEvent.listen(_onSeek);
     _handler.skipEvent.listen(_onSkip);
+    Future(
+      () async {
+        _currentVolume = ValueNotifier(await PerfectVolumeControl.volume);
+      },
+    );
     PerfectVolumeControl.stream.listen(_onVolumeChange);
     super.initState();
   }
@@ -255,12 +257,14 @@ class PlayerScreenState extends State<PlayerScreen> {
               left: 0,
               right: 0,
               child: BlurContainer(
-                height:
-                    MediaQuery.of(context).orientation == Orientation.portrait
-                        ? 200
-                        : 70,
-                child: _portraitOrientedControls(),
-              ),
+                  height:
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                          ? 200
+                          : 70,
+                  child:
+                      MediaQuery.of(context).orientation == Orientation.portrait
+                          ? _portraitOrientedControls()
+                          : _landscapeOrientedControls()),
             ),
           ],
         ),
@@ -268,6 +272,10 @@ class PlayerScreenState extends State<PlayerScreen> {
     } else {
       return const SizedBox.shrink();
     }
+  }
+
+  Widget _landscapeOrientedControls() {
+    return const SizedBox.shrink();
   }
 
   Widget _portraitOrientedControls() {
@@ -327,7 +335,7 @@ class PlayerScreenState extends State<PlayerScreen> {
         ),
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.85,
-          height: 30,
+          height: 25,
           child: ValueListenableBuilder(
             valueListenable: _currentVolume,
             builder: (context, value, _) {
@@ -340,6 +348,34 @@ class PlayerScreenState extends State<PlayerScreen> {
                 onVolumeIconPress: () {},
               );
             },
+          ),
+        ),
+        SizedBox(
+          height: 70,
+          width: MediaQuery.of(context).size.width * 0.80,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconPressingAnimation(
+                onPress: () {},
+                child: const Icon(CupertinoIcons.gobackward_15),
+              ),
+              IconPressingAnimation(
+                onPress: () {},
+                child: const Icon(CupertinoIcons.goforward_15),
+              ),
+              IconPressingAnimation(
+                onPress: () {},
+                child: const Text(
+                  "1",
+                  style: TextStyle(fontSize: 20, color: Color(0xFF98989f)),
+                ),
+              ),
+              IconPressingAnimation(
+                onPress: () {},
+                child: const Icon(CupertinoIcons.ellipsis_vertical),
+              ),
+            ],
           ),
         )
       ],

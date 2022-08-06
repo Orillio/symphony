@@ -7,6 +7,7 @@ import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:symphony/api/api_downloads/directory_manager.dart';
 import 'package:symphony/components/shared/item_pressing_animation.dart';
+import 'package:symphony/components/utils.dart';
 import 'package:symphony/screens/player/player_screen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -36,20 +37,7 @@ class _MediaItemState extends State<MediaListItem> {
     }
   }
 
-  String durationToMinutes(Duration duration) {
-    var minutes = duration.inMinutes;
-    return minutes < 10 ? "0$minutes" : "$minutes";
-  }
-
-  String durationToRemainderSeconds(Duration duration) {
-    int result = duration.inSeconds % 60;
-    return result < 10 ? "0$result" : "$result";
-  }
-
-  String appendZero(int item) {
-    return item < 10 ? "0$item" : "$item";
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     var videoChangeNotifier = context.read<VideoPlayerChangeNotifier>();
@@ -126,15 +114,15 @@ class _MediaItemState extends State<MediaListItem> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        "${durationToMinutes(widget.model.duration)}:"
-                                        "${durationToRemainderSeconds(widget.model.duration)} | "
+                                        "${Utils.durationToMinutes(widget.model.duration)}:"
+                                        "${Utils.durationToRemainderSeconds(widget.model.duration)} | "
                                         "${(widget.model.fileSize / (1024 * 1024)).toStringAsFixed(1)} MB",
                                         maxLines: 1,
                                         style:
                                             const TextStyle(color: Colors.grey),
                                       ),
                                       Text(
-                                        "${appendZero(changedDate.day)}.${appendZero(changedDate.month)}.${changedDate.year}",
+                                        "${Utils.appendZero(changedDate.day)}.${Utils.appendZero(changedDate.month)}.${changedDate.year}",
                                         maxLines: 1,
                                         style:
                                             const TextStyle(color: Colors.grey),
