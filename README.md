@@ -1,16 +1,49 @@
-# symphony
+# Symphony
+## The coolest offline player ever
 
-A new Flutter project.
 
-## Getting Started
+Symphony is a simple offline player with many features.
 
-This project is a starting point for a Flutter application.
+## Features
 
-A few resources to get you started if this is your first Flutter project:
+- Download video/audio from different sources.
+- Save videos/audio on your device and easily access them.
+- Play them with our embedded video player.
+- Listen to music while in other app.
+- Create playlists.
+- Edit downloaded files as you wish.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Installation
+### Android
+The app requires at least 22 Android API SDK to be installed. 
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+First, clone the project
+```sh
+git clone https://github.com/Orillio/symphony
+```
+Then, start the emulator along with the project.
+```sh
+flutter run
+```
+### iOS
+`NOTE: You need mac system to run the project on ios.`
+
+First, clone the project
+```sh
+git clone https://github.com/Orillio/symphony
+```
+
+For iOS, install [brew](https://brew.sh) and cocoaPods
+```sh
+brew install cocoapods
+```
+Then, open simulator and run the project
+```sh
+open -a Simulator
+flutter run
+```
+
+## If you wish to contribute to the project
+- make a fork of a repo 
+- make PR with corresponding feature or fix.
+
