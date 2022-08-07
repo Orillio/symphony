@@ -30,11 +30,11 @@ class _MediaScreenState extends State<MediaScreen>
       appBar: AppBar(
         centerTitle: false,
         title: const Text("Медиатека"),
-        actions: const [
+        actions: [
           Padding(
-            padding: EdgeInsets.only(right: 15),
+            padding: const EdgeInsets.only(right: 15),
             child: ActionButton(
-              text: Text(
+              text: const Text(
                 "Править",
               ),
             ),

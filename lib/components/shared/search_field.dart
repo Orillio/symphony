@@ -67,9 +67,7 @@ class _SearchFieldState extends State<SearchField> {
           child: TextField(
             focusNode: _focusNode,
             onChanged: (newStr) {
-              widget.onChanged != null
-                  ? widget.onChanged!(newStr)
-                  : null;
+              widget.onChanged != null ? widget.onChanged!(newStr) : null;
 
               var temp = newStr.isNotEmpty;
               if (_hasText != temp) {
@@ -117,9 +115,7 @@ class _SearchFieldState extends State<SearchField> {
         ActionButton(
           color: _color,
           width: _width,
-          text: const Text(
-            "Отменить"
-          ),
+          text: const Text("Отменить"),
         )
       ],
     );
