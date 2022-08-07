@@ -142,9 +142,11 @@ class _MediaItemState extends State<MediaListItem> {
                                   );
                                 },
                               ).then((value) {
-                                context
+                                if(value) {
+                                  context
                                     .read<MediaScreenChangeNotifier>()
                                     .fetchMediaData();
+                                }
                               });
                             },
                             customBorder: RoundedRectangleBorder(

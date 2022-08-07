@@ -94,6 +94,10 @@ class _SearchFieldState extends State<SearchField> {
                 borderSide: const BorderSide(color: Colors.transparent),
                 borderRadius: BorderRadius.circular(20),
               ),
+              enabledBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.transparent),
+                borderRadius: BorderRadius.circular(20),
+              ),
               prefixIcon: Icon(
                 CupertinoIcons.search,
                 color: Get.theme.iconTheme.color,

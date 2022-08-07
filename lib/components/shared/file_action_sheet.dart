@@ -17,21 +17,21 @@ class FileActionSheet extends StatelessWidget {
       title: title != null ? Text(title!) : null,
       cancelButton: CupertinoActionSheetAction(
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.pop(context, false);
         },
         child: const Text("Отменить"),
       ),
       actions: [
         CupertinoActionSheetAction(
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context, true);
           },
           child: const Text("Переименовать"),
         ),
         CupertinoActionSheetAction(
           isDestructiveAction: true,
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context, true);
             DirectoryManager.instance.deleteFile(filePath);
           },
           child: const Text("Удалить"),
