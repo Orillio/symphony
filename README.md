@@ -2,8 +2,6 @@
 ## The coolest offline player ever
 
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
-
 Symphony is a simple offline player with many features.
 
 ## Features
