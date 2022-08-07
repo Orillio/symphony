@@ -2,17 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:provider/provider.dart';
 import 'package:symphony/api/api_youtube/yt_api_manager.dart';
+import 'package:symphony/components/utils.dart';
+import 'package:symphony/navigation_scaffold.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
-
-import '../screens/navigation_pages/media_screen.dart';
 
 class SearchItem extends StatelessWidget {
   final bool hasDivider;
   final Video model;
 
-  const SearchItem({required this.hasDivider,
-    required this.model,Key? key}) : super(key: key);
+  const SearchItem({required this.hasDivider, required this.model, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,9 @@ class __SearchItemState extends State<_SearchItem> {
       setState(() {
         _videoState = 1;
       });
-      mediaScreenKey.currentState!.setState(() {});
+      if (mounted) {
+        context.read<MediaScreenChangeNotifier>().fetchMediaData();
+      }
     });
     super.initState();
   }
@@ -99,7 +102,8 @@ class __SearchItemState extends State<_SearchItem> {
                                 height: 5,
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   SizedBox(
                                     width:
@@ -108,12 +112,13 @@ class __SearchItemState extends State<_SearchItem> {
                                       widget.model.author,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(color: Colors.grey),
+                                      style:
+                                          const TextStyle(color: Colors.grey),
                                     ),
                                   ),
                                   Text(
-                                    "${(widget.model.duration!.inSeconds / 60).round()}:"
-                                    "${widget.model.duration!.inSeconds % 60}",
+                                    "${Utils.durationToMinutes(widget.model.duration!)}:"
+                                    "${Utils.durationToRemainderSeconds(widget.model.duration!)}",
                                     maxLines: 1,
                                     style: const TextStyle(color: Colors.grey),
                                   ),

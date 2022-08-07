@@ -7,6 +7,7 @@ import 'package:symphony/screens/navigation_pages/downloads_screen.dart';
 import 'package:symphony/screens/navigation_pages/info_screen.dart';
 import 'package:symphony/screens/navigation_pages/media_screen.dart';
 import 'package:symphony/screens/navigation_pages/search_screen.dart';
+import 'api/api_downloads/directory_manager.dart';
 import 'screens/player/video_player_sheet.dart';
 
 class VideoPlayerChangeNotifier extends ChangeNotifier {
@@ -17,8 +18,18 @@ class VideoPlayerChangeNotifier extends ChangeNotifier {
     bottomSheetAnimationController.duration = defaultDuration;
     bottomSheetAnimationController.reverse();
   }
+
   closeBottomSheet() {
     bottomSheetAnimationController.forward();
+  }
+}
+
+class MediaScreenChangeNotifier extends ChangeNotifier {
+  var searchFieldController = TextEditingController();
+  ValueNotifier<Future<List<MediaFile>>?> media = ValueNotifier(null);
+
+  void fetchMediaData() {
+    media.value = DirectoryManager.instance.getVideosInDocumentsFolder();
   }
 }
 
@@ -65,8 +76,15 @@ class _NavigationScaffold extends StatelessWidget {
         FocusScope.of(context).unfocus();
       },
       child: Scaffold(
-        body: ChangeNotifierProvider(
-          create: (_) => VideoPlayerChangeNotifier(),
+        body: MultiProvider(
+          providers: [
+            ChangeNotifierProvider(
+              create: (_) => VideoPlayerChangeNotifier(),
+            ),
+            ChangeNotifierProvider(
+              create: (_) => MediaScreenChangeNotifier(),
+            ),
+          ],
           child: Stack(
             children: [
               Consumer<VideoPlayerChangeNotifier>(

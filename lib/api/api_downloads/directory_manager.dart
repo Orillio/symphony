@@ -8,14 +8,23 @@ class MediaFile {
   String path;
   String title;
   int fileSize;
-  double duration;
+  Duration duration;
   MediaType mediaType;
   MediaFile(
       this.path, this.title, this.fileSize, this.duration, this.mediaType);
 }
 
-class DownloadsApi {
+class DirectoryManager {
   final _videoInfo = FlutterVideoInfo();
+
+  DirectoryManager._();
+
+  static DirectoryManager? _instance;
+
+  static DirectoryManager get instance {
+    return _instance ??= DirectoryManager._();
+  }
+
 
   Future<List<MediaFile>> getVideosInDocumentsFolder() async {
     var documents = Directory(
@@ -37,7 +46,7 @@ class DownloadsApi {
 
       video.title = video.title!.replaceAll("_", " ");
       result.add(MediaFile(video.path!, video.title!, video.filesize!,
-          video.duration!, mediaType));
+          Duration(milliseconds: video.duration!.round()), mediaType));
     }
     return result;
   }

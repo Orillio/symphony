@@ -1,47 +1,31 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:symphony/api/api_downloads/downloads_api.dart';
+import 'package:symphony/api/api_downloads/directory_manager.dart';
 import 'package:symphony/components/media_list_item.dart';
 import 'package:symphony/components/shared/search_field.dart';
 
 import '../../components/shared/action_button.dart';
+import '../../navigation_scaffold.dart';
 
-GlobalKey mediaScreenKey = GlobalKey();
-
-class MediaScreenChangeNotifier extends ChangeNotifier {
-  var searchFieldController = TextEditingController();
-  Future<List<MediaFile>>? mediaFuture;
-}
-
-class MediaScreen extends StatelessWidget {
+class MediaScreen extends StatefulWidget {
   const MediaScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) => ChangeNotifierProvider(
-        create: (_) => MediaScreenChangeNotifier(),
-        child: _MediaScreen(key: mediaScreenKey),
-      );
+  State<MediaScreen> createState() => _MediaScreenState();
 }
 
-class _MediaScreen extends StatefulWidget {
-  const _MediaScreen({Key? key}) : super(key: key);
-
-  @override
-  State<_MediaScreen> createState() => __MediaScreenState();
-}
-
-class __MediaScreenState extends State<_MediaScreen>
-    with AutomaticKeepAliveClientMixin<_MediaScreen> {
+class _MediaScreenState extends State<MediaScreen>
+    with AutomaticKeepAliveClientMixin<MediaScreen> {
   final String title = "Медиатека";
 
-  final downloads = DownloadsApi();
+  final downloads = DirectoryManager.instance;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     var model = context.watch<MediaScreenChangeNotifier>();
-    model.mediaFuture = downloads.getVideosInDocumentsFolder();
+    model.fetchMediaData();
     return Scaffold(
       appBar: AppBar(
         centerTitle: false,
@@ -68,37 +52,41 @@ class __MediaScreenState extends State<_MediaScreen>
                 hintText: "Искать в медиатеке",
               ),
             ),
-            FutureBuilder<List<MediaFile>>(
-              future: model.mediaFuture,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return Expanded(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: snapshot.data!.length,
-                      itemBuilder: (context, index) {
-                        return MediaListItem(
-                          key: UniqueKey(),
-                          model: snapshot.data![index],
-                          hasDivider: index != snapshot.data!.length - 1,
+            ValueListenableBuilder<Future<List<MediaFile>>?>(
+                valueListenable: model.media,
+                builder: (context, mediaFuture, _) {
+                  return FutureBuilder<List<MediaFile>>(
+                    future: mediaFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        return Expanded(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: snapshot.data!.length,
+                            itemBuilder: (context, index) {
+                              return MediaListItem(
+                                key: UniqueKey(),
+                                model: snapshot.data![index],
+                                hasDivider: index != snapshot.data!.length - 1,
+                              );
+                            },
+                          ),
                         );
-                      },
-                    ),
+                      } else {
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.height * 0.3,
+                          ),
+                          child: Center(
+                            child: CupertinoActivityIndicator(
+                              color: Colors.grey[100],
+                            ),
+                          ),
+                        );
+                      }
+                    },
                   );
-                } else {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.3,
-                    ),
-                    child: Center(
-                      child: CupertinoActivityIndicator(
-                        color: Colors.grey[100],
-                      ),
-                    ),
-                  );
-                }
-              },
-            )
+                })
           ],
         ),
       ),

@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
-import 'package:symphony/api/api_downloads/downloads_api.dart';
-import 'package:symphony/screens/navigation_pages/media_screen.dart';
+import 'package:symphony/api/api_downloads/directory_manager.dart';
+import 'package:symphony/components/shared/item_pressing_animation.dart';
+import 'package:symphony/components/utils.dart';
 import 'package:symphony/screens/player/player_screen.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 
@@ -26,8 +27,6 @@ class MediaListItem extends StatefulWidget {
 class _MediaItemState extends State<MediaListItem> {
   Future<Uint8List?>? thumbnailData;
   late DateTime changedDate;
-  var _containerColor = Colors.transparent;
-
   @override
   void initState() {
     super.initState();
@@ -38,45 +37,20 @@ class _MediaItemState extends State<MediaListItem> {
     }
   }
 
-  String durationToMinutes(double duration) {
-    int result = (duration / (1000 * 60)).floor();
-    return result < 10 ? "0$result" : "$result";
-  }
-
-  String durationToRemainderSeconds(double duration) {
-    int result = ((duration / 1000) % 60).round();
-    return result < 10 ? "0$result" : "$result";
-  }
-
-  String appendZero(int item) {
-    return item < 10 ? "0$item" : "$item";
-  }
-
+  
   @override
   Widget build(BuildContext context) {
     var videoChangeNotifier = context.read<VideoPlayerChangeNotifier>();
     var mediaChangeNotifier = context.read<MediaScreenChangeNotifier>();
-    return GestureDetector(
-      onTap: () async {
+
+    return ItemPressingAnimation(
+      onPress: () async {
         await Future.delayed(const Duration(milliseconds: 300));
-        await playerKey.currentState?.prepare(widget.model, await mediaChangeNotifier.mediaFuture!);
+        await playerKey.currentState
+            ?.prepare(widget.model, await mediaChangeNotifier.media.value!);
         videoChangeNotifier.openBottomSheet();
       },
-      onTapUp: (_) async {
-        await Future.delayed(const Duration(milliseconds: 300));
-        setState(() {
-          _containerColor = Colors.transparent;
-        });
-      },
-      onTapDown: (_) async {
-        setState(() {
-          _containerColor = Colors.grey.shade900;
-        });
-      },
-      child: AnimatedContainer(
-        color: _containerColor,
-        duration: const Duration(milliseconds: 180),
-        child: Padding(
+      child: Padding(
           padding: const EdgeInsets.all(0),
           child: Row(
             children: [
@@ -140,15 +114,15 @@ class _MediaItemState extends State<MediaListItem> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        "${durationToMinutes(widget.model.duration)}:"
-                                        "${durationToRemainderSeconds(widget.model.duration)} | "
+                                        "${Utils.durationToMinutes(widget.model.duration)}:"
+                                        "${Utils.durationToRemainderSeconds(widget.model.duration)} | "
                                         "${(widget.model.fileSize / (1024 * 1024)).toStringAsFixed(1)} MB",
                                         maxLines: 1,
                                         style:
                                             const TextStyle(color: Colors.grey),
                                       ),
                                       Text(
-                                        "${appendZero(changedDate.day)}.${appendZero(changedDate.month)}.${changedDate.year}",
+                                        "${Utils.appendZero(changedDate.day)}.${Utils.appendZero(changedDate.month)}.${changedDate.year}",
                                         maxLines: 1,
                                         style:
                                             const TextStyle(color: Colors.grey),
@@ -194,7 +168,6 @@ class _MediaItemState extends State<MediaListItem> {
             ],
           ),
         ),
-      ),
     );
   }
 }
