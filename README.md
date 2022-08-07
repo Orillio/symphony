@@ -1,4 +1,12 @@
 # Symphony
+
+<div style="display: flex; flex-direction: row;">
+  <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/orillio/symphony/CI">
+  <img alt="GitHub" src="https://img.shields.io/github/license/orillio/symphony">
+  <img alt="GitHub issues" src="https://img.shields.io/github/issues/orillio/symphony">
+  <img alt="GitHub release (latest by date including pre-releases)" src="https://img.shields.io/github/downloads-pre/orillio/symphony/0.0.1/total">
+</div>
+
 ## The coolest offline player ever
 
 
