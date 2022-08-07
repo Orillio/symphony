@@ -4,6 +4,8 @@ PODS:
   - audio_session (0.0.1):
     - Flutter
   - Flutter (1.0.0)
+  - flutter_headset_detector (2.1.0):
+    - Flutter
   - flutter_secure_storage (3.3.1):
     - Flutter
   - flutter_video_info (1.1.0):
@@ -43,6 +45,7 @@ DEPENDENCIES:
   - audio_service (from `.symlinks/plugins/audio_service/ios`)
   - audio_session (from `.symlinks/plugins/audio_session/ios`)
   - Flutter (from `Flutter`)
+  - flutter_headset_detector (from `.symlinks/plugins/flutter_headset_detector/ios`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
   - flutter_video_info (from `.symlinks/plugins/flutter_video_info/ios`)
   - just_audio (from `.symlinks/plugins/just_audio/ios`)
@@ -66,6 +69,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/audio_session/ios"
   Flutter:
     :path: Flutter
+  flutter_headset_detector:
+    :path: ".symlinks/plugins/flutter_headset_detector/ios"
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
   flutter_video_info:
@@ -91,6 +96,7 @@ SPEC CHECKSUMS:
   audio_service: f509d65da41b9521a61f1c404dd58651f265a567
   audio_session: 4f3e461722055d21515cf3261b64c973c062f345
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  flutter_headset_detector: 087a64f776342a1fb73d21b68c068182aa60462f
   flutter_secure_storage: 7953c38a04c3fdbb00571bcd87d8e3b5ceb9daec
   flutter_video_info: a932e1b0da369bba95c3a14b7f61d5f8b0d03280
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a

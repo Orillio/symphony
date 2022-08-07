@@ -25,6 +25,13 @@ class DirectoryManager {
     return _instance ??= DirectoryManager._();
   }
 
+  Future deletedFiles(List<String> paths) async {
+    for (var path in paths) {
+      deleteFile(path);
+    }
+  }
+
+  Future deleteFile(String path) async => File(path).delete();
 
   Future<List<MediaFile>> getVideosInDocumentsFolder() async {
     var documents = Directory(

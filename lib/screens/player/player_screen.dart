@@ -343,9 +343,6 @@ class PlayerScreenState extends State<PlayerScreen>
               },
             ),
           ),
-          const SizedBox(
-            width: 50,
-          ),
           Expanded(
             flex: 5,
             child: Row(

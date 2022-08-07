@@ -153,6 +153,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.3.0"
+  flutter_headset_detector:
+    dependency: "direct main"
+    description:
+      name: flutter_headset_detector
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.0"
   flutter_lints:
     dependency: "direct dev"
     description:
