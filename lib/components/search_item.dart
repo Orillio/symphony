@@ -8,6 +8,7 @@ import 'package:symphony/api/search_engines/search_engine.dart';
 import 'package:symphony/api/search_engines/yt_search_engine.dart';
 import 'package:symphony/components/utils.dart';
 import 'package:symphony/navigation_scaffold.dart';
+import 'package:symphony/themes/themes.dart';
 
 class SearchItem extends StatefulWidget {
   final bool hasDivider;
@@ -39,13 +40,18 @@ class _SearchItemState extends State<SearchItem> {
 
   @override
   initState() {
-    thumbnail = widget.model.thumbnailUrl == null
+    thumbnail = widget.model.thumbnailUrl != null
         ? Image.network(
             widget.model.thumbnailUrl!,
             width: 60,
             height: 50,
           )
-        : Image.asset("assets/note.png");
+        : Image.asset(
+            "assets/note.png",
+            width: 60,
+            height: 50,
+            color: const Color(0xFF6b6b6b),
+          );
 
     var temp = context.read<SearchEngine>();
     if (temp is YtSearchEngine) {
