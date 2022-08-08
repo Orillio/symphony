@@ -50,7 +50,9 @@ class PlayerScreenState extends State<PlayerScreen>
   /// file to be played.
   Future<void> prepare(MediaFile mediaFile, List<MediaFile> queue,
       {bool overwriteCurrentMedia = false}) async {
-    if (mediaFile == _currentMediaFile || overwriteCurrentMedia) return;
+    if (mediaFile.title == _currentMediaFile?.title || overwriteCurrentMedia) {
+      return;
+    }
 
     _queue = queue;
 
