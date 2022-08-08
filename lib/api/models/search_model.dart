@@ -1,4 +1,4 @@
-abstract class ISearchModel {
+abstract class SearchModel {
   late String id;
   String? thumbnailUrl;
   late String title;

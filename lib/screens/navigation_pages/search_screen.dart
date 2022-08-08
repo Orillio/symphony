@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:symphony/api/search_engines/yt_search_engine.dart';
 import 'package:symphony/components/dark_segmented_control.dart';
-
-import '../search_pages/vk_search_page.dart';
-import '../search_pages/yt_search_page.dart';
+import '../search_pages/search_page.dart';
 
 class SearchScreenModel extends ChangeNotifier {
   int _tabIndex = 0;
@@ -58,8 +57,12 @@ class __SearchScreenState extends StatelessWidget {
     ),
   };
   final List<Widget> tabs = [
-    const YtSearchPage(),
-    const VkSearchPage(),
+    SearchPage(
+      engine: YtSearchEngine(),
+    ),
+    SearchPage(
+      engine: YtSearchEngine(),
+    ),
   ];
   @override
   Widget build(BuildContext context) {

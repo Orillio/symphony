@@ -1,6 +1,6 @@
-import 'package:symphony/api/models/i_search_model.dart';
+import 'package:symphony/api/models/search_model.dart';
 
-class YtSearchModel implements ISearchModel {
+class YtSearchModel implements SearchModel {
   @override
   late String id;
   @override
@@ -11,14 +11,4 @@ class YtSearchModel implements ISearchModel {
   late String author;
   @override
   Duration? duration;
-
-  YtSearchModel.fromMap(Map<String, dynamic> map) {
-    id = map["videoId"];
-    thumbnailUrl = map["thumbnailUrl"];
-    title = map["title"];
-    author = map["author"];
-    duration = map["duration"];
-  }
-
-
 }
