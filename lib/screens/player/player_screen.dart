@@ -89,6 +89,7 @@ class PlayerScreenState extends State<PlayerScreen>
             allowBackgroundPlayback: true,
           ));
       await _videoController!.initialize();
+      _handler.resetPosition();
       await _handler.play();
       setState(() {});
 
