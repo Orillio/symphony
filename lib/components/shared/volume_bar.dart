@@ -24,17 +24,24 @@ class _VolumeBarState extends State<VolumeBar> {
       children: [
         const Icon(CupertinoIcons.volume_mute),
         Expanded(
-          child: Slider(
-            thumbColor: Colors.white,
-            activeColor: Colors.white,
-            inactiveColor: Colors.grey[800],
-            min: 0,
-            max: 1,
-            value: widget.currentVolume,
-            onChanged: widget.onDragUpdate,
+          child: SliderTheme(
+            data: const SliderThemeData(
+              trackHeight: 2,
+              thumbShape: RoundSliderThumbShape(
+                enabledThumbRadius: 7,
+              ),
+            ),
+            child: Slider(
+              thumbColor: Colors.white,
+              activeColor: Colors.white,
+              inactiveColor: Colors.grey[800],
+              min: 0,
+              max: 1,
+              value: widget.currentVolume,
+              onChanged: widget.onDragUpdate,
+            ),
           ),
         ),
-        const Icon(CupertinoIcons.volume_up),
       ],
     );
   }

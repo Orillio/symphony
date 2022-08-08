@@ -43,6 +43,11 @@ class PlayerAudioHandler extends BaseAudioHandler
     return _skipEventController.stream;
   }
 
+  resetPosition() {
+    playbackState.add(playbackState.value.copyWith(
+      updatePosition: Duration.zero
+    ));
+  }
 
   Future<void> init(MediaFile mediaFile, List<MediaFile> queueMedia) async {
     playbackState.add(PlaybackState(
@@ -100,7 +105,7 @@ class PlayerAudioHandler extends BaseAudioHandler
     var newState = playbackState.value.copyWith(
         playing: true,
         updatePosition: playerKey.currentState!.getCurrentPosition());
-    
+
     playbackState.add(newState);
     _playEventController.add(newState);
   }

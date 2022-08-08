@@ -89,6 +89,7 @@ class PlayerScreenState extends State<PlayerScreen>
             allowBackgroundPlayback: true,
           ));
       await _videoController!.initialize();
+      _handler.resetPosition();
       await _handler.play();
       setState(() {});
 
@@ -342,9 +343,6 @@ class PlayerScreenState extends State<PlayerScreen>
                 );
               },
             ),
-          ),
-          const SizedBox(
-            width: 50,
           ),
           Expanded(
             flex: 5,
