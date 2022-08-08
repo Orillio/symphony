@@ -5,6 +5,7 @@ import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:symphony/api/models/search_model.dart';
 import 'package:symphony/api/search_engines/search_engine.dart';
+import 'package:symphony/api/search_engines/yt_search_engine.dart';
 import 'package:symphony/components/utils.dart';
 import 'package:symphony/navigation_scaffold.dart';
 
@@ -27,9 +28,18 @@ class _SearchItemState extends State<SearchItem> {
   late int _videoState;
   late Widget thumbnail;
 
+  void _onProgressDone() {
+    setState(() {
+      _videoState = 1;
+    });
+    if (mounted) {
+      context.read<MediaScreenChangeNotifier>().fetchMediaData();
+    }
+  }
+
   @override
   initState() {
-    thumbnail = widget.model.thumbnailUrl != null
+    thumbnail = widget.model.thumbnailUrl == null
         ? Image.network(
             widget.model.thumbnailUrl!,
             width: 60,
@@ -37,16 +47,13 @@ class _SearchItemState extends State<SearchItem> {
           )
         : Image.asset("assets/note.png");
 
-    _searchEngine = context.read<SearchEngine>();
+    var temp = context.read<SearchEngine>();
+    if (temp is YtSearchEngine) {
+      _searchEngine = YtSearchEngine();
+    }
     _videoState = 0;
-    _searchEngine.progressBroadcastStream.listen((event) {}, onDone: () {
-      setState(() {
-        _videoState = 1;
-      });
-      if (mounted) {
-        context.read<MediaScreenChangeNotifier>().fetchMediaData();
-      }
-    });
+    _searchEngine.progressBroadcastStream
+        .listen((event) {}, onDone: _onProgressDone);
     super.initState();
   }
 
