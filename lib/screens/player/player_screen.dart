@@ -406,11 +406,17 @@ class PlayerScreenState extends State<PlayerScreen>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconPressingAnimation(
-                  onPress: () {},
+                  onPress: () {
+                    _handler.seek(
+                        getCurrentPosition() - const Duration(seconds: 15));
+                  },
                   child: const Icon(CupertinoIcons.gobackward_15),
                 ),
                 IconPressingAnimation(
-                  onPress: () {},
+                  onPress: () {
+                    _handler.seek(
+                        getCurrentPosition() + const Duration(seconds: 15));
+                  },
                   child: const Icon(CupertinoIcons.goforward_15),
                 ),
                 IconPressingAnimation(
@@ -511,15 +517,22 @@ class PlayerScreenState extends State<PlayerScreen>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconPressingAnimation(
-                onPress: () {},
+                onPress: () {
+                  _handler.seek(
+                      getCurrentPosition() - const Duration(seconds: 15));
+                },
                 child: const Icon(CupertinoIcons.gobackward_15),
               ),
               IconPressingAnimation(
-                onPress: () {},
+                onPress: () {
+                  _handler.seek(
+                        getCurrentPosition() + const Duration(seconds: 15));
+                },
                 child: const Icon(CupertinoIcons.goforward_15),
               ),
               IconPressingAnimation(
-                onPress: () {},
+                onPress: () {
+                },
                 child: const Text(
                   "1",
                   style: TextStyle(fontSize: 20, color: Color(0xFF98989f)),

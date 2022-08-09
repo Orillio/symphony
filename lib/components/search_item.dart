@@ -8,7 +8,6 @@ import 'package:symphony/api/search_engines/search_engine.dart';
 import 'package:symphony/api/search_engines/yt_search_engine.dart';
 import 'package:symphony/components/utils.dart';
 import 'package:symphony/navigation_scaffold.dart';
-import 'package:symphony/themes/themes.dart';
 
 class SearchItem extends StatefulWidget {
   final bool hasDivider;
