@@ -43,10 +43,9 @@ class PlayerAudioHandler extends BaseAudioHandler
     return _skipEventController.stream;
   }
 
-  resetPosition() {
-    playbackState.add(playbackState.value.copyWith(
-      updatePosition: Duration.zero
-    ));
+  void resetPosition() {
+    playbackState
+        .add(playbackState.value.copyWith(updatePosition: Duration.zero));
   }
 
   Future<void> init(MediaFile mediaFile, List<MediaFile> queueMedia) async {
@@ -81,8 +80,13 @@ class PlayerAudioHandler extends BaseAudioHandler
         duration: mediaFile.duration,
       ),
     );
+    addInQueue(queueMedia, currentIndex: 0);
+  }
+
+  Future<void> addInQueue(List<MediaFile> mediaFiles,
+      {int? currentIndex}) async {
     queue.add(
-      queueMedia.map((e) {
+      mediaFiles.map((e) {
         return MediaItem(
           id: const Uuid().v4(),
           title: e.title,
@@ -90,6 +94,8 @@ class PlayerAudioHandler extends BaseAudioHandler
         );
       }).toList(),
     );
+    playbackState
+        .add(playbackState.value.copyWith(queueIndex: currentIndex ?? 0));
   }
 
   @override
@@ -130,8 +136,7 @@ class PlayerAudioHandler extends BaseAudioHandler
 
   @override
   Future<void> skipToQueueItem(int index) async {
-    if (index < 0) return;
-    var clampedIndex = index % queue.value.length;
+    int clampedIndex = index % queue.value.length;
 
     var newState = playbackState.value.copyWith(queueIndex: clampedIndex);
     playbackState.add(newState);
