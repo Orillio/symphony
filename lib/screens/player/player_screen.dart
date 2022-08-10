@@ -29,25 +29,33 @@ class PlayerScreen extends StatefulWidget {
 
 class PlayerScreenState extends State<PlayerScreen>
     with TickerProviderStateMixin {
+
   MediaFile? _currentMediaFile;
+  MediaFile? get currentMediaFile => _currentMediaFile;
+
+  /// current queue session
   List<MediaFile>? _queue;
+
+  /// first queue session
   List<MediaFile>? _initialQueue;
+  
   VideoPlayerController? _videoController;
   late PlayerAudioHandler _handler;
+  
+  /// controller for sliding animation for controls 
   late AnimationController animationController;
 
-  // current volume, notifies the volume bar if changes.
+  /// current volume, notifies the volume bar if changes.
   late final ValueNotifier<double> _currentVolume;
 
+  /// value notifier for tracking shuffle mode value
   final ValueNotifier<bool> _isShuffleEnabled = ValueNotifier(false);
 
-  // for tracking current position of song
+  /// for tracking current position of song
   Duration _currentPosition = const Duration();
 
-  // if user is dragging slider right now
+  /// if user is dragging slider right now
   bool _isSeeking = false;
-
-  MediaFile? get currentMediaFile => _currentMediaFile;
 
   /// Preparing for new video/audio session, setting new video/audio
   /// file to be played.
