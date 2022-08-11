@@ -3,20 +3,21 @@ import 'dart:io';
 import 'package:logger/logger.dart';
 import 'package:path_provider/path_provider.dart' as pp;
 import 'package:symphony/api/models/search_model.dart';
-import 'package:symphony/api/models/yt_search_model.dart';
 import 'package:symphony/api/search_engines/search_engine.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
 class YtSearchEngine implements SearchEngine {
   YtSearchEngine({
-    this.hasLogger = true,
+    hasLogger = true,
   }) {
     progressBroadcastStream = progressBroadcastStreamController.stream;
+    if (hasLogger) {
+      _logger = Logger();
+    }
   }
 
-  bool hasLogger;
   final _yt = YoutubeExplode();
-  final _logger = Logger();
+  Logger? _logger;
 
   StreamController<double> progressBroadcastStreamController =
       StreamController.broadcast();
@@ -31,7 +32,7 @@ class YtSearchEngine implements SearchEngine {
       return e.duration != null;
     }).toList();
     return newResponse.map<SearchModel>((e) {
-      return YtSearchModel()
+      return SearchModel()
         ..id = e.id.value
         ..title = e.title
         ..author = e.author
@@ -61,9 +62,7 @@ class YtSearchEngine implements SearchEngine {
         "${appDir.path}/${fileName ?? videoTitle}.${muxedVideo.container.name}");
 
     if (newFile.existsSync()) {
-      if (hasLogger) {
-        _logger.i("The file with this name already exists. Rewriting it...");
-      }
+      _logger?.i("The file with this name already exists. Rewriting it...");
       newFile.deleteSync();
     }
     var output = newFile.openWrite();
@@ -75,20 +74,18 @@ class YtSearchEngine implements SearchEngine {
       progressBroadcastStreamController.add(count / len);
     });
 
-    if (hasLogger) _logger.i("Downloading started...");
+    _logger?.i("Downloading started...");
     try {
       await downloadBroadcastStream.pipe(output);
     } catch (e) {
-      if (hasLogger) _logger.e("Error happened!\n$e");
+      _logger?.e("Error happened!\n$e");
     }
     progressBroadcastStreamController.close();
     output.flush();
     output.close();
 
-    if (hasLogger) {
-      _logger.i("Successfully downloaded file with size:"
-          " ${muxedVideo.size.totalMegaBytes.toStringAsFixed(2)} MB!"
-          " The new file name is ${newFile.path}");
-    }
+    _logger?.i("Successfully downloaded file with size:"
+        " ${muxedVideo.size.totalMegaBytes.toStringAsFixed(2)} MB!"
+        " The new file name is ${newFile.path}");
   }
 }
