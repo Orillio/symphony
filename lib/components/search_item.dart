@@ -3,57 +3,62 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:symphony/api/api_youtube/yt_api_manager.dart';
+import 'package:symphony/api/models/search_model.dart';
+import 'package:symphony/api/search_engines/search_engine.dart';
+import 'package:symphony/api/search_engines/yt_search_engine.dart';
 import 'package:symphony/components/utils.dart';
 import 'package:symphony/navigation_scaffold.dart';
-import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
-class SearchItem extends StatelessWidget {
+class SearchItem extends StatefulWidget {
   final bool hasDivider;
-  final Video model;
+  final SearchModel model;
 
-  const SearchItem({required this.hasDivider, required this.model, Key? key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return _SearchItem(
-      hasDivider: hasDivider,
-      model: model,
-    );
-  }
-}
-
-class _SearchItem extends StatefulWidget {
-  final bool hasDivider;
-  final Video model;
-
-  const _SearchItem({
+  const SearchItem({
     required this.hasDivider,
     required this.model,
     Key? key,
   }) : super(key: key);
 
   @override
-  State<_SearchItem> createState() => __SearchItemState();
+  State<SearchItem> createState() => _SearchItemState();
 }
 
-class __SearchItemState extends State<_SearchItem> {
-  late YtApiManager _ytApiManager;
+class _SearchItemState extends State<SearchItem> {
+  late SearchEngine _searchEngine;
   late int _videoState;
+  late Widget thumbnail;
+
+  void _onProgressDone() {
+    setState(() {
+      _videoState = 1;
+    });
+    if (mounted) {
+      context.read<MediaScreenChangeNotifier>().fetchMediaData();
+    }
+  }
 
   @override
   initState() {
-    _ytApiManager = YtApiManager();
+    thumbnail = widget.model.thumbnailUrl != null
+        ? Image.network(
+            widget.model.thumbnailUrl!,
+            width: 60,
+            height: 50,
+          )
+        : Image.asset(
+            "assets/note.png",
+            width: 60,
+            height: 50,
+            color: const Color(0xFF6b6b6b),
+          );
+
+    var temp = context.read<SearchEngine>();
+    if (temp is YtSearchEngine) {
+      _searchEngine = YtSearchEngine();
+    }
     _videoState = 0;
-    _ytApiManager.progressBroadcastStream.listen((event) {}, onDone: () {
-      setState(() {
-        _videoState = 1;
-      });
-      if (mounted) {
-        context.read<MediaScreenChangeNotifier>().fetchMediaData();
-      }
-    });
+    _searchEngine.progressBroadcastStream
+        .listen((event) {}, onDone: _onProgressDone);
     super.initState();
   }
 
@@ -67,11 +72,7 @@ class __SearchItemState extends State<_SearchItem> {
             flex: 1,
             child: Padding(
               padding: const EdgeInsets.all(2),
-              child: Image.network(
-                widget.model.thumbnails.lowResUrl,
-                width: 60,
-                height: 50,
-              ),
+              child: thumbnail,
             ),
           ),
           Flexible(
@@ -135,7 +136,7 @@ class __SearchItemState extends State<_SearchItem> {
                                 setState(() {
                                   _videoState = 2;
                                 });
-                                _ytApiManager.downloadVideo(widget.model);
+                                _searchEngine.downloadMedia(widget.model);
                               },
                               customBorder: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
@@ -160,7 +161,7 @@ class __SearchItemState extends State<_SearchItem> {
                               ),
                             ),
                             StreamBuilder<double>(
-                              stream: _ytApiManager.progressBroadcastStream
+                              stream: _searchEngine.progressBroadcastStream
                                   .asBroadcastStream(),
                               builder: (context, snapshot) {
                                 if (!snapshot.hasData) {

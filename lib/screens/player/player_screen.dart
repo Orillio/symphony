@@ -29,30 +29,43 @@ class PlayerScreen extends StatefulWidget {
 
 class PlayerScreenState extends State<PlayerScreen>
     with TickerProviderStateMixin {
+
   MediaFile? _currentMediaFile;
+  MediaFile? get currentMediaFile => _currentMediaFile;
+
+  /// current queue session
   List<MediaFile>? _queue;
+
+  /// first queue session
+  List<MediaFile>? _initialQueue;
+  
   VideoPlayerController? _videoController;
   late PlayerAudioHandler _handler;
+  
+  /// controller for sliding animation for controls 
   late AnimationController animationController;
 
-  // current volume, notifies the volume bar if changes.
+  /// current volume, notifies the volume bar if changes.
   late final ValueNotifier<double> _currentVolume;
 
-  // for tracking current position of song
+  /// value notifier for tracking shuffle mode value
+  final ValueNotifier<bool> _isShuffleEnabled = ValueNotifier(false);
+
+  /// for tracking current position of song
   Duration _currentPosition = const Duration();
 
-  // if user is dragging slider right now
+  /// if user is dragging slider right now
   bool _isSeeking = false;
-
-  MediaFile? get currentMediaFile => _currentMediaFile;
 
   /// Preparing for new video/audio session, setting new video/audio
   /// file to be played.
   Future<void> prepare(MediaFile mediaFile, List<MediaFile> queue,
       {bool overwriteCurrentMedia = false}) async {
-    if (mediaFile == _currentMediaFile || overwriteCurrentMedia) return;
-
-    _queue = queue;
+    if (mediaFile.title == _currentMediaFile?.title || overwriteCurrentMedia) {
+      return;
+    }
+    _initialQueue = List.from(queue);
+    _queue = List.from(queue);
 
     await PlayerAudioHandler().init(mediaFile, _queue!);
     await _setCurrentMediaFile(mediaFile);
@@ -74,6 +87,10 @@ class PlayerScreenState extends State<PlayerScreen>
       session.becomingNoisyEventStream.listen((event) {
         _handler.pause();
       });
+      _isShuffleEnabled.addListener(() {
+        if (_isShuffleEnabled.value) {
+        } else {}
+      });
     } else {
       Logger().i("Audio session denied..");
     }
@@ -89,7 +106,7 @@ class PlayerScreenState extends State<PlayerScreen>
             allowBackgroundPlayback: true,
           ));
       await _videoController!.initialize();
-      _handler.resetPosition();
+      resetCurrentPosition();
       await _handler.play();
       setState(() {});
 
@@ -97,8 +114,24 @@ class PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+  void _shuffle() {
+    _queue!.shuffle();
+    _handler.addInQueue(_queue!,
+        currentIndex: _queue!.indexOf(currentMediaFile!));
+  }
+
+  void _unShuffle() {
+    _queue = List.from(_initialQueue!);
+    _handler.addInQueue(_queue!,
+        currentIndex: _queue!.indexOf(currentMediaFile!));
+  }
+
   Duration getCurrentPosition() {
     return _currentPosition;
+  }
+
+  void resetCurrentPosition() {
+    _currentPosition = Duration.zero;
   }
 
   // callbacks passed to _handler.
@@ -129,14 +162,22 @@ class PlayerScreenState extends State<PlayerScreen>
   }
 
   void _onVideoTick() {
-    if (_videoController!.value.position >= _videoController!.value.duration) {
+    if (_videoController!.value.position >=
+        _videoController!.value.duration - const Duration(milliseconds: 500)) {
       _onVideoEnd();
-      _videoController?.removeListener(_onVideoTick);
+      if (!_videoController!.value.isLooping) {
+        _videoController?.removeListener(_onVideoTick);
+      }
     }
   }
 
   void _onVideoEnd() {
-    _handler.skipToNext();
+    if (!_videoController!.value.isLooping) {
+      _handler.skipToNext();
+    } else {
+      resetCurrentPosition();
+      _handler.resetPosition();
+    }
   }
 
   @override
@@ -330,19 +371,7 @@ class PlayerScreenState extends State<PlayerScreen>
         children: [
           Expanded(
             flex: 4,
-            child: ValueListenableBuilder(
-              valueListenable: _currentVolume,
-              builder: (context, value, _) {
-                return VolumeBar(
-                  currentVolume: _currentVolume.value,
-                  onDragUpdate: (volume) async {
-                    await PerfectVolumeControl.setVolume(volume);
-                    setState(() {});
-                  },
-                  onVolumeIconPress: () {},
-                );
-              },
-            ),
+            child: _volumeBarControl(),
           ),
           Expanded(
             flex: 5,
@@ -350,48 +379,11 @@ class PlayerScreenState extends State<PlayerScreen>
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Icon(
-                  CupertinoIcons.repeat,
-                  size: 20,
-                ),
-                IconPressingAnimation(
-                  onPress: () {
-                    _handler.skipToPrevious();
-                  },
-                  child: const Icon(
-                    CupertinoIcons.backward_fill,
-                    size: 35,
-                    color: Colors.white,
-                  ),
-                ),
-                IconPressingAnimation(
-                  onPress: () {
-                    _videoController!.value.isPlaying
-                        ? _handler.pause()
-                        : _handler.play();
-                  },
-                  child: Icon(
-                    !_videoController!.value.isPlaying
-                        ? CupertinoIcons.play_arrow_solid
-                        : CupertinoIcons.pause_fill,
-                    size: 35,
-                    color: Colors.white,
-                  ),
-                ),
-                IconPressingAnimation(
-                  onPress: () {
-                    _handler.skipToNext();
-                  },
-                  child: const Icon(
-                    CupertinoIcons.forward_fill,
-                    size: 35,
-                    color: Colors.white,
-                  ),
-                ),
-                const Icon(
-                  CupertinoIcons.shuffle,
-                  size: 20,
-                ),
+                _repeatControl(),
+                _skipToPreviousControl(),
+                _playButtonControl(Orientation.landscape),
+                _skipToNext(),
+                _shuffleControl()
               ],
             ),
           ),
@@ -403,25 +395,10 @@ class PlayerScreenState extends State<PlayerScreen>
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconPressingAnimation(
-                  onPress: () {},
-                  child: const Icon(CupertinoIcons.gobackward_15),
-                ),
-                IconPressingAnimation(
-                  onPress: () {},
-                  child: const Icon(CupertinoIcons.goforward_15),
-                ),
-                IconPressingAnimation(
-                  onPress: () {},
-                  child: const Text(
-                    "1",
-                    style: TextStyle(fontSize: 20, color: Color(0xFF98989f)),
-                  ),
-                ),
-                IconPressingAnimation(
-                  onPress: () {},
-                  child: const Icon(CupertinoIcons.ellipsis_vertical),
-                ),
+                _seekBackControl(),
+                _seekForward(),
+                _speedControl(),
+                _moreControl(),
               ],
             ),
           )
@@ -440,67 +417,18 @@ class PlayerScreenState extends State<PlayerScreen>
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Icon(
-                CupertinoIcons.repeat,
-                size: 20,
-              ),
-              IconPressingAnimation(
-                onPress: () {
-                  _handler.skipToPrevious();
-                },
-                child: const Icon(
-                  CupertinoIcons.backward_fill,
-                  size: 35,
-                  color: Colors.white,
-                ),
-              ),
-              IconPressingAnimation(
-                onPress: () {
-                  _videoController!.value.isPlaying
-                      ? _handler.pause()
-                      : _handler.play();
-                },
-                child: Icon(
-                  _videoController!.value.isPlaying
-                      ? CupertinoIcons.pause_circle_fill
-                      : CupertinoIcons.play_circle_fill,
-                  size: 50,
-                  color: Colors.white,
-                ),
-              ),
-              IconPressingAnimation(
-                onPress: () {
-                  _handler.skipToNext();
-                },
-                child: const Icon(
-                  CupertinoIcons.forward_fill,
-                  size: 35,
-                  color: Colors.white,
-                ),
-              ),
-              const Icon(
-                CupertinoIcons.shuffle,
-                size: 20,
-              ),
+              _repeatControl(),
+              _skipToPreviousControl(),
+              _playButtonControl(Orientation.portrait),
+              _skipToNext(),
+              _shuffleControl(),
             ],
           ),
         ),
         SizedBox(
           width: MediaQuery.of(context).size.width * 0.85,
           height: 25,
-          child: ValueListenableBuilder(
-            valueListenable: _currentVolume,
-            builder: (context, value, _) {
-              return VolumeBar(
-                currentVolume: _currentVolume.value,
-                onDragUpdate: (volume) async {
-                  await PerfectVolumeControl.setVolume(volume);
-                  setState(() {});
-                },
-                onVolumeIconPress: () {},
-              );
-            },
-          ),
+          child: _volumeBarControl(),
         ),
         SizedBox(
           height: 70,
@@ -508,29 +436,164 @@ class PlayerScreenState extends State<PlayerScreen>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IconPressingAnimation(
-                onPress: () {},
-                child: const Icon(CupertinoIcons.gobackward_15),
-              ),
-              IconPressingAnimation(
-                onPress: () {},
-                child: const Icon(CupertinoIcons.goforward_15),
-              ),
-              IconPressingAnimation(
-                onPress: () {},
-                child: const Text(
-                  "1",
-                  style: TextStyle(fontSize: 20, color: Color(0xFF98989f)),
-                ),
-              ),
-              IconPressingAnimation(
-                onPress: () {},
-                child: const Icon(CupertinoIcons.ellipsis_vertical),
-              ),
+              _seekBackControl(),
+              _seekForward(),
+              _speedControl(),
+              _moreControl(),
             ],
           ),
         )
       ],
+    );
+  }
+
+  Widget _moreControl() {
+    return IconPressingAnimation(
+      onPress: () {},
+      child: const Icon(CupertinoIcons.ellipsis_vertical),
+    );
+  }
+
+  Widget _speedControl() {
+    return IconPressingAnimation(
+      onPress: () {},
+      child: const Text(
+        "1",
+        style: TextStyle(fontSize: 20, color: Color(0xFF98989f)),
+      ),
+    );
+  }
+
+  Widget _seekForward() {
+    return IconPressingAnimation(
+      onPress: () {
+        _handler.seek(getCurrentPosition() + const Duration(seconds: 15));
+      },
+      child: const Icon(CupertinoIcons.goforward_15),
+    );
+  }
+
+  Widget _seekBackControl() {
+    return IconPressingAnimation(
+      onPress: () {
+        _handler.seek(getCurrentPosition() - const Duration(seconds: 15));
+      },
+      child: const Icon(CupertinoIcons.gobackward_15),
+    );
+  }
+
+  Widget _volumeBarControl() {
+    return ValueListenableBuilder(
+      valueListenable: _currentVolume,
+      builder: (context, value, _) {
+        return VolumeBar(
+          currentVolume: _currentVolume.value,
+          onDragUpdate: (volume) async {
+            await PerfectVolumeControl.setVolume(volume);
+            setState(() {});
+          },
+          onVolumeIconPress: () {},
+        );
+      },
+    );
+  }
+
+  Widget _repeatControl() {
+    return IconPressingAnimation(
+      onPress: () {
+        if (_videoController!.value.isLooping) {
+          _videoController!.setLooping(false);
+        } else {
+          _videoController!.setLooping(true);
+        }
+      },
+      child: ValueListenableBuilder<VideoPlayerValue>(
+        valueListenable: _videoController!,
+        builder: (context, value, child) {
+          return Icon(
+            CupertinoIcons.repeat,
+            size: 20,
+            color: value.isLooping
+                ? Theme.of(context).primaryColor
+                : Theme.of(context).primaryColorDark,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _shuffleControl() {
+    return IconPressingAnimation(
+      onPress: () {
+        _isShuffleEnabled.value = !_isShuffleEnabled.value;
+
+        if (_isShuffleEnabled.value) {
+          _shuffle();
+        } else {
+          _unShuffle();
+        }
+      },
+      child: ValueListenableBuilder<bool>(
+        valueListenable: _isShuffleEnabled,
+        builder: (context, value, child) {
+          return Icon(
+            CupertinoIcons.shuffle,
+            size: 20,
+            color: value
+                ? Theme.of(context).primaryColor
+                : Theme.of(context).primaryColorDark,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _skipToNext() {
+    return IconPressingAnimation(
+      onPress: () {
+        _handler.skipToNext();
+      },
+      child: const Icon(
+        CupertinoIcons.forward_fill,
+        size: 35,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  Widget _skipToPreviousControl() {
+    return IconPressingAnimation(
+      onPress: () {
+        _handler.skipToPrevious();
+      },
+      child: const Icon(
+        CupertinoIcons.backward_fill,
+        size: 35,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  Widget _playButtonControl(Orientation orientation) {
+    return IconPressingAnimation(
+      onPress: () {
+        _videoController!.value.isPlaying ? _handler.pause() : _handler.play();
+      },
+      child: orientation == Orientation.landscape
+          ? Icon(
+              !_videoController!.value.isPlaying
+                  ? CupertinoIcons.play_arrow_solid
+                  : CupertinoIcons.pause_fill,
+              size: 35,
+              color: Colors.white,
+            )
+          : Icon(
+              _videoController!.value.isPlaying
+                  ? CupertinoIcons.pause_circle_fill
+                  : CupertinoIcons.play_circle_fill,
+              size: 50,
+              color: Colors.white,
+            ),
     );
   }
 }
