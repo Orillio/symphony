@@ -6,8 +6,14 @@ class ActionButton extends StatefulWidget {
   Color? color;
   double? width = 100;
   final Widget text;
-
-  ActionButton({this.width, this.color, required this.text, Key? key}) : super(key: key);
+  VoidCallback? onPress;
+  ActionButton({
+    this.width,
+    this.color,
+    this.onPress,
+    required this.text,
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<ActionButton> createState() => _ActionButtonState();
@@ -33,13 +39,13 @@ class _ActionButtonState extends State<ActionButton> {
           });
           FocusScope.of(context).unfocus();
         },
+        onTap: () {
+          widget.onPress?.call();
+        },
         child: Center(
           child: AnimatedDefaultTextStyle(
             maxLines: 1,
-            style: TextStyle(
-                color: widget.color,
-                fontSize: 16
-            ),
+            style: TextStyle(color: widget.color, fontSize: 16),
             duration: const Duration(milliseconds: 150),
             child: widget.text,
           ),

@@ -117,6 +117,9 @@ class _SearchFieldState extends State<SearchField> {
           ),
         ),
         ActionButton(
+          onPress: () {
+            widget.controller.clear();
+          },
           color: _color,
           width: _width,
           text: const Text("Отменить"),

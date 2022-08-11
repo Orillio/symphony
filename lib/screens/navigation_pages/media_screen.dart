@@ -21,6 +21,9 @@ class _MediaScreenState extends State<MediaScreen>
 
   final downloads = DirectoryManager.instance;
 
+  bool _match(String value, String matcher) =>
+      matcher.toLowerCase().contains(value.toLowerCase());
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -53,40 +56,51 @@ class _MediaScreenState extends State<MediaScreen>
               ),
             ),
             ValueListenableBuilder<Future<List<MediaFile>>?>(
-                valueListenable: model.media,
-                builder: (context, mediaFuture, _) {
-                  return FutureBuilder<List<MediaFile>>(
-                    future: mediaFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Expanded(
-                          child: ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              return MediaListItem(
-                                key: UniqueKey(),
-                                model: snapshot.data![index],
-                                hasDivider: index != snapshot.data!.length - 1,
-                              );
-                            },
+              valueListenable: model.media,
+              builder: (context, mediaFuture, _) {
+                return FutureBuilder<List<MediaFile>>(
+                  future: mediaFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Expanded(
+                        child: ValueListenableBuilder<TextEditingValue>(
+                          valueListenable: model.searchFieldController,
+                          builder: (context, value, child) {
+                            return ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: snapshot.data!.length,
+                              itemBuilder: (context, index) {
+                                if (_match(
+                                    value.text, snapshot.data![index].title)) {
+                                  return MediaListItem(
+                                    key: UniqueKey(),
+                                    model: snapshot.data![index],
+                                    hasDivider:
+                                        index != snapshot.data!.length - 1,
+                                  );
+                                }
+                                return SizedBox.shrink();
+                              },
+                            );
+                          },
+                        ),
+                      );
+                    } else {
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * 0.3,
+                        ),
+                        child: Center(
+                          child: CupertinoActivityIndicator(
+                            color: Colors.grey[100],
                           ),
-                        );
-                      } else {
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            top: MediaQuery.of(context).size.height * 0.3,
-                          ),
-                          child: Center(
-                            child: CupertinoActivityIndicator(
-                              color: Colors.grey[100],
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                  );
-                })
+                        ),
+                      );
+                    }
+                  },
+                );
+              },
+            )
           ],
         ),
       ),

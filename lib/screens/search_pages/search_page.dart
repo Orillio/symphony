@@ -26,6 +26,7 @@ class SearchPage extends StatelessWidget {
   const SearchPage({Key? key, required this.engine}) : super(key: key);
 
   final SearchEngine engine;
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -60,19 +61,20 @@ class SearchPage extends StatelessWidget {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     return Expanded(
-                      child: ListView.builder(
-                        itemCount: snapshot.data!.length,
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            children: [
-                              SearchItem(
+                      child: ValueListenableBuilder(
+                        valueListenable: model.textSearchController,
+                        builder: (context, value, child) {
+                          return ListView.builder(
+                            itemCount: snapshot.data!.length,
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              return SearchItem(
                                 key: UniqueKey(),
                                 model: snapshot.data![index],
                                 hasDivider: index != snapshot.data!.length - 1,
-                              ),
-                            ],
+                              );
+                            },
                           );
                         },
                       ),
