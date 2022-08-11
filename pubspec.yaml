@@ -35,6 +35,7 @@ dependencies:
   uuid: ^3.0.6
   perfect_volume_control: ^1.0.5
   get_it: ^7.2.0
+  flutter_launcher_icons: ^0.10.0
 
 dev_dependencies:
   flutter_test:
@@ -44,4 +45,10 @@ dev_dependencies:
 flutter:
   assets:
   - assets/note.png
+  - assets/icon.png
   uses-material-design: true
+
+flutter_icons:
+  ios: true
+  android: true
+  image_path: "assets/icon.png"

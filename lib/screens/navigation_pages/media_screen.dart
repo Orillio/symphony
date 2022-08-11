@@ -73,13 +73,12 @@ class _MediaScreenState extends State<MediaScreen>
                                 if (_match(
                                     value.text, snapshot.data![index].title)) {
                                   return MediaListItem(
-                                    key: UniqueKey(),
                                     model: snapshot.data![index],
                                     hasDivider:
                                         index != snapshot.data!.length - 1,
                                   );
                                 }
-                                return SizedBox.shrink();
+                                return const SizedBox.shrink();
                               },
                             );
                           },
