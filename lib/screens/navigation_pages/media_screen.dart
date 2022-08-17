@@ -66,20 +66,27 @@ class _MediaScreenState extends State<MediaScreen>
                         child: ValueListenableBuilder<TextEditingValue>(
                           valueListenable: model.searchFieldController,
                           builder: (context, value, child) {
-                            return ListView.builder(
-                              shrinkWrap: true,
-                              itemCount: snapshot.data!.length,
-                              itemBuilder: (context, index) {
-                                if (_match(
-                                    value.text, snapshot.data![index].title)) {
-                                  return MediaListItem(
-                                    model: snapshot.data![index],
-                                    hasDivider:
-                                        index != snapshot.data!.length - 1,
-                                  );
-                                }
-                                return const SizedBox.shrink();
-                              },
+                            return Column(
+                              children: [
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: snapshot.data!.length,
+                                  itemBuilder: (context, index) {
+                                    if (_match(value.text,
+                                        snapshot.data![index].title)) {
+                                      return MediaListItem(
+                                        model: snapshot.data![index],
+                                        hasDivider:
+                                            index != snapshot.data!.length - 1,
+                                      );
+                                    }
+                                    return const SizedBox.shrink();
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 100,
+                                )
+                              ],
                             );
                           },
                         ),

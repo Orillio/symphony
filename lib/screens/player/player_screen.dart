@@ -29,7 +29,6 @@ class PlayerScreen extends StatefulWidget {
 
 class PlayerScreenState extends State<PlayerScreen>
     with TickerProviderStateMixin {
-
   MediaFile? _currentMediaFile;
   MediaFile? get currentMediaFile => _currentMediaFile;
 
@@ -38,11 +37,11 @@ class PlayerScreenState extends State<PlayerScreen>
 
   /// first queue session
   List<MediaFile>? _initialQueue;
-  
+
   VideoPlayerController? _videoController;
   late PlayerAudioHandler _handler;
-  
-  /// controller for sliding animation for controls 
+
+  /// controller for sliding animation for controls
   late AnimationController animationController;
 
   /// current volume, notifies the volume bar if changes.
