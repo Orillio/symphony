@@ -70,6 +70,7 @@ class _ItemPressingAnimation extends State<ItemPressingAnimation>
       onTapCancel: () async {
         _isHolding.value = false;
         controller.reverse();
+        
       },
       child: AnimatedBuilder(
           animation: controller,
