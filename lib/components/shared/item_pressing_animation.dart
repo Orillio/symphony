@@ -54,6 +54,7 @@ class _ItemPressingAnimation extends State<ItemPressingAnimation>
     end: Colors.transparent,
   );
 
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
