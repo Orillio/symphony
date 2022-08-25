@@ -133,6 +133,7 @@ class PlayerScreenState extends State<PlayerScreen>
     _currentPosition = Duration.zero;
   }
 
+
   // callbacks passed to _handler.
   Future _onPlay(PlaybackState value) async {
     if (_videoController == null) return;
