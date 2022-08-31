@@ -95,6 +95,7 @@ class PlayerScreenState extends State<PlayerScreen>
     }
   }
 
+
   Future _setCurrentMediaFile(MediaFile mediaFile) async {
     _currentMediaFile = mediaFile;
     var file = File(_currentMediaFile!.path);
